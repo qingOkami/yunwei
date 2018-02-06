@@ -7,20 +7,111 @@
           <span style="color: #333">投诉管理</span>
           <span>我的代办(<span style="color:darkturquoise">11</span>)</span>
         </div>
-        <el-button style="margin:10px 0 0 15px">批量删除</el-button>
+        <div>
+          <el-button style="margin:10px 0 0 15px">批量删除</el-button>
+          <div style="float: right">
+
+            <el-autocomplete
+            v-model="state4"
+            :fetch-suggestions="querySearchAsync"
+            placeholder="请输入内容"
+            @select="handleSelect"
+          ></el-autocomplete>
+
+            <el-select v-model="value" placeholder="更多条件" style="width: 100px;">
+              <el-option
+                v-for="item in options"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
+
+            <el-button type="info">刷新</el-button>
+            <router-link to="/NewSurvey">
+            <el-button type="success" style="margin-left: 0">新建调研</el-button>
+            </router-link>
+          <el-button ><i class="el-icon-caret-right"></i></el-button>
+          </div>
+        </div>
+
       </el-header>
 
       <el-main>
-        <el-autocomplete
-          v-model="state4"
-          :fetch-suggestions="querySearchAsync"
-          placeholder="请输入内容"
-          @select="handleSelect"
-        ></el-autocomplete>
+        <el-table
+          ref="multipleTable"
+          :data="tableData3"
+          border
+          tooltip-effect="dark"
+          style="width: 100%"
+          @selection-change="handleSelectionChange">
+          <el-table-column
+            type="selection"
+            width="55">
+          </el-table-column>
+          <el-table-column
+            label="调研单号"
+            width="120">
+            <template slot-scope="scope">{{ scope.row.date }}</template>
+          </el-table-column>
+          <el-table-column
+            prop="name"
+            label="调研主题"
+            width="200">
+          </el-table-column>
+          <el-table-column
+            prop="address"
+            label="学校名称"
+            show-overflow-tooltip>
+          </el-table-column>
+          <el-table-column
+            prop="name"
+            label="负责人"
+            width="80">
+          </el-table-column>
+          <el-table-column
+            prop="address"
+            label="调研单位"
+            >
+          </el-table-column>
+          <el-table-column
+            prop="name"
+            label="调研人"
+            width="120">
+          </el-table-column>
+          <el-table-column
+            prop="name"
+            label="状态"
+            width="120">
+          </el-table-column>
+          <el-table-column
+            label="操作"
+          width="180">
+            <template slot-scope="scope">
+              <el-button
+                size="mini"
+                icon="el-icon-edit"
+                @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+              <el-button
+                size="mini"
+                type="danger"
+                icon="el-icon-delete"
+                @click="handleDelete(scope.$index, scope.row)"></el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+        <div style="margin-top: 20px">
+          <el-button @click="toggleSelection()">取消选择</el-button>
+        </div>
       </el-main>
     </el-container>
 
-
+    <el-pagination
+      background
+      layout="prev, pager, next"
+      :total="1000"
+    style="float: right">
+    </el-pagination>
 
   </div>
 </template>
@@ -31,7 +122,54 @@
       return {
         restaurants: [],
         state4: '',
-        timeout:  null
+        timeout:  null,
+        options: [{
+          value: '选项1',
+          label: '黄金糕'
+        }, {
+          value: '选项2',
+          label: '双皮奶'
+        }, {
+          value: '选项3',
+          label: '蚵仔煎'
+        }, {
+          value: '选项4',
+          label: '龙须面'
+        }, {
+          value: '选项5',
+          label: '北京烤鸭'
+        }],
+        tableData3: [{
+          date: '2016-05-03',
+          name: '王小虎',
+          address: '上海市普陀区金沙江路 1518 弄'
+        }, {
+          date: '2016-05-02',
+          name: '王小虎',
+          address: '上海市普陀区金沙江路 1518 弄'
+        }, {
+          date: '2016-05-04',
+          name: '王小虎',
+          address: '上海市普陀区金沙江路 1518 弄'
+        }, {
+          date: '2016-05-01',
+          name: '王小虎',
+          address: '上海市普陀区金沙江路 1518 弄'
+        }, {
+          date: '2016-05-08',
+          name: '王小虎',
+          address: '上海市普陀区金沙江路 1518 弄'
+        }, {
+          date: '2016-05-06',
+          name: '王小虎',
+          address: '上海市普陀区金沙江路 1518 弄'
+        }, {
+          date: '2016-05-07',
+          name: '王小虎',
+          address: '上海市普陀区金沙江路 1518 弄'
+        }],
+        multipleSelection: [],
+        value: ''
       };
     },
     methods: {
@@ -87,6 +225,12 @@
           { "value": "南拳妈妈龙虾盖浇饭", "address": "普陀区金沙江路1699号鑫乐惠美食广场A13" }
         ];
       },
+      handleEdit(index, row) {
+        console.log(index, row);
+      },
+      handleDelete(index, row) {
+        console.log(index, row);
+      },
       querySearchAsync(queryString, cb) {
         var restaurants = this.restaurants;
         var results = queryString ? restaurants.filter(this.createStateFilter(queryString)) : restaurants;
@@ -103,6 +247,18 @@
       },
       handleSelect(item) {
         console.log(item);
+      },
+      toggleSelection(rows) {
+        if (rows) {
+          rows.forEach(row => {
+            this.$refs.multipleTable.toggleRowSelection(row);
+          });
+        } else {
+          this.$refs.multipleTable.clearSelection();
+        }
+      },
+      handleSelectionChange(val) {
+        this.multipleSelection = val;
       }
     },
     mounted() {
