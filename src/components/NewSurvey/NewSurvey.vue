@@ -72,7 +72,7 @@
             </el-form-item>
             <el-form-item>
               <el-button type="primary" @click="dialogVisible = true">预览</el-button>
-              <el-button type="primary" @click="submitForm('ruleForm')">保存</el-button>
+              <el-button type="primary" @click="postData()">保存</el-button>
               <el-button @click="resetForm('ruleForm')">返回</el-button>
             </el-form-item>
           </el-form>
@@ -137,11 +137,13 @@
 </template>
 
 <script>
-    export default { data() {
+    export default {
+      data() {
 
         return {
           dialogVisible: false,
           isShow:false,
+          results:[],
           ruleForm: {
             name: '',
             region: '',
@@ -181,6 +183,32 @@
         };
       },
       methods: {
+        postData () {
+          this.$axios.post('http://172.16.6.11:10080/bods.svc/AddResearch?token=8CA2A4BCDD0F451BB64701BD44CB1414', {
+            RecId: 'Fred',
+            LastModDateTime: 'Flintstone',
+            LastModBy: 'Flintstone',
+            CreatedDateTime: 'Flintstone',
+            CreatedBy: 'Flintstone',
+            Title: 'Flintstone',
+            Content: 'Flintstone',
+            ProjectName: 'Flintstone',
+            CenterContact: 'Flintstone',
+            PhoneNumber: 'Flintstone',
+            ResearchOrganization: 'Flintstone',
+            ResearchPeople: 'Flintstone',
+            Participants: 'Flintstone',
+            SchoolName: 'Flintstone',
+            Teacher: 'Flintstone',
+            Status: 'Flintstone',
+            ResearchGroupId: 'Flintstone',
+          }).then((res)=>{
+            console.log(res.data);
+            this.datas=res.data;
+          },error=>{
+            console.log(error);
+          })
+        },
         submitForm(formName) {
           this.$refs[formName].validate((valid) => {
             if (valid) {
@@ -204,6 +232,11 @@
             })
             .catch(_ => {});
         }
+      },
+      mounted() {
+        this.$axios.post("http://172.16.6.11:10080/bods.svc/AddResearch?token=F20BF44FD4D848A89BBAD8BD9E9EB6B8")
+          .then(response => {
+            this.results = response.data.resultes})
       }
     }
 </script>
