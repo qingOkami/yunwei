@@ -123,6 +123,7 @@
         restaurants: [],
         state4: '',
         timeout:  null,
+        datas:[],
         options: [{
           value: '选项1',
           label: '黄金糕'
@@ -225,6 +226,18 @@
           { "value": "南拳妈妈龙虾盖浇饭", "address": "普陀区金沙江路1699号鑫乐惠美食广场A13" }
         ];
       },
+      postData () {
+        axios.post('/user', {
+          firstName: 'Fred',
+          lastName: 'Flintstone'
+        })
+          .then(function (response) {
+            console.log(response);
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
+      },
       handleEdit(index, row) {
         console.log(index, row);
       },
@@ -259,7 +272,7 @@
       },
       handleSelectionChange(val) {
         this.multipleSelection = val;
-      }
+      },
     },
     mounted() {
       this.restaurants = this.loadAll();
