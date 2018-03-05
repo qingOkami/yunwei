@@ -52,7 +52,9 @@
           <el-table-column
             label="调研单号"
             width="120">
-            <template slot-scope="scope">{{ scope.row.date }}</template>
+            <template slot-scope="scope" >
+              <el-button type="text" size="small" style="color: #606266" @click="handleDeteilsSur()">{{ scope.row.date }}</el-button>
+            </template>
           </el-table-column>
           <el-table-column
             prop="name"
@@ -109,7 +111,7 @@
     <el-pagination
       background
       layout="prev, pager, next"
-      :total="1000"
+      :total="100"
     style="float: right">
     </el-pagination>
 
@@ -242,7 +244,7 @@
         console.log(index, row);
       },
       handleDelete(index, row) {
-        console.log(index, row);
+        console.log(111);
       },
       querySearchAsync(queryString, cb) {
         var restaurants = this.restaurants;
@@ -273,10 +275,22 @@
       handleSelectionChange(val) {
         this.multipleSelection = val;
       },
+      handleDeteilsSur(){
+        this.$router.push('/DetailsSurvey')
+      }
     },
+    // beforeMount:function () {
+    //   var cTime=1;
+    //   this.timer=setInterval(() => {
+    //     console.log(cTime++);
+    //   },100);
+    // },
     mounted() {
       this.restaurants = this.loadAll();
-    }
+    },
+    // beforeDestroy:function () {
+    //   clearInterval(this.timer)
+    // }
   };
 </script>
 <style scoped>
