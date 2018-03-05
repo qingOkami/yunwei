@@ -20,7 +20,8 @@ export default new Router({
     {
       path: '/DetailsSurvey',
       name: 'DetailsSurvey',
-      component: DetailsSurvey
+      component: DetailsSurvey,
+
     }
   ]
 })

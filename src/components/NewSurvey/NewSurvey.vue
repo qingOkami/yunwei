@@ -72,8 +72,10 @@
             </el-form-item>
             <el-form-item>
               <el-button type="primary" @click="dialogVisible = true">预览</el-button>
-              <el-button type="primary" @click="postData()">保存</el-button>
+              <el-button type="primary" @click="postData">保存</el-button>
               <el-button @click="resetForm('ruleForm')">返回</el-button>
+              <el-button @click="getComputedDate()">computed</el-button>
+              <el-button @click="getMethonds()">methonds</el-button>
             </el-form-item>
           </el-form>
         </el-tab-pane>
@@ -86,7 +88,7 @@
         <span>这是一段信息</span>
          <h2 style="text-align: center">朝阳区其他公办幼儿园安防监控达标建设勘察介绍信</h2>
         <div style="padding: 0 60px">
-          <p style="margin-top: 35px">
+          <p style="margin-top: 35px" id="kk">
             <span style="font-weight:400;font-size: 16px;">
               &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;根据朝阳区教育委员会安排，依据《关于加强本市中小学幼儿园安全工作的意见》（京教勤[2010]8号）文件精神，进一步提高个教育单位安全防范能力，了解幼儿园现有安防监控系统现状。
           </span>
@@ -107,6 +109,7 @@
               信息中心联系人：高超
             </span>
           </p>
+
           <p>
             <span style="font-weight:400;font-size: 16px;">
               联系电话：85979246-84044
@@ -133,11 +136,16 @@
 <!--</div>-->
 <!--</div>-->
       <!--</div>-->
+      <!--<myfooter></myfooter>-->
     </div>
 </template>
 
 <script>
+  import myfooter from '../footer/footer.vue'
     export default {
+      // components: {
+      //   myfooter
+      // },
       data() {
 
         return {
@@ -184,11 +192,8 @@
       },
       methods: {
         postData () {
-          this.$axios.post('http://172.16.6.11:10080/bods.svc/AddResearch?token=8CA2A4BCDD0F451BB64701BD44CB1414', {
-            RecId: 'Fred',
-            LastModDateTime: 'Flintstone',
+          this.$axios.post('http://172.16.6.11:10080/AddResearch?token=D092816810EC45BDB81FF963CF05AF24', {
             LastModBy: 'Flintstone',
-            CreatedDateTime: 'Flintstone',
             CreatedBy: 'Flintstone',
             Title: 'Flintstone',
             Content: 'Flintstone',
@@ -201,7 +206,8 @@
             SchoolName: 'Flintstone',
             Teacher: 'Flintstone',
             Status: 'Flintstone',
-            ResearchGroupId: 'Flintstone',
+            StartDateTime: '2018-2-28 14:52:35',
+            EndDateTime: '2018-2-28 14:52:35',
           }).then((res)=>{
             console.log(res.data);
             this.datas=res.data;
@@ -231,12 +237,47 @@
               done();
             })
             .catch(_ => {});
+        },
+        getMethonds:function () {
+          alert(new Date())
+        },
+        getComputedDate: function () {
+          alert(this.computedTest)
         }
       },
+      computed:{
+        computedTest:function(){
+          return new Date()
+        }
+      },
+      beforeCreate:function () {
+
+      },
+      created:function () {
+
+      },
+      // beforeMount:function () {
+      //   var cTime=1;
+      //   setInterval(() => {
+      //     console.log(cTime++);
+      //   },100);
+      // },
       mounted() {
         this.$axios.post("http://172.16.6.11:10080/bods.svc/AddResearch?token=F20BF44FD4D848A89BBAD8BD9E9EB6B8")
           .then(response => {
             this.results = response.data.resultes})
+      },
+      beforeUpdate:function () {
+
+      },
+      updated:function () {
+
+      },
+      beforeDestroy:function () {
+
+      },
+      destroyed:function () {
+        clearInterval()
       }
     }
 </script>
