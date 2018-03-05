@@ -31,7 +31,6 @@
             <router-link to="/NewSurvey">
             <el-button type="success" style="margin-left: 0">新建调研</el-button>
             </router-link>
-          <el-button ><i class="el-icon-caret-right"></i></el-button>
           </div>
         </div>
 
@@ -90,15 +89,13 @@
             label="操作"
           width="180">
             <template slot-scope="scope">
+             <div style="float: left;margin-top: 5px"><i style="display:inline-block;width: 20px;height: 30px;" class="step04" slot="icon"></i></div>
               <el-button
                 size="mini"
-                icon="el-icon-edit"
-                @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-              <el-button
-                size="mini"
-                type="danger"
-                icon="el-icon-delete"
-                @click="handleDelete(scope.$index, scope.row)"></el-button>
+                style="border: 0"
+                @click="handleDelete(scope.$index, scope.row)">
+                <img src="../assets/icon/dfp.png" alt="">
+              </el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -126,6 +123,7 @@
         state4: '',
         timeout:  null,
         datas:[],
+        results:[],
         options: [{
           value: '选项1',
           label: '黄金糕'
@@ -287,6 +285,9 @@
     // },
     mounted() {
       this.restaurants = this.loadAll();
+      this.$axios.get("http://172.16.6.11:10080/GetResearchIndex?token=5D1CE32374B14AB2B41FBF7D622B5A2E")
+        .then(response => {
+          this.results = response.data.resultes})
     },
     // beforeDestroy:function () {
     //   clearInterval(this.timer)
@@ -294,5 +295,6 @@
   };
 </script>
 <style scoped>
-
+  .step04{
+    background: url("../assets/icon/user.png") no-repeat}
 </style>
