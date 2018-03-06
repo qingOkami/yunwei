@@ -40,7 +40,7 @@
       <el-main>
         <el-table
 
-          :data="tableData3"
+          :data="infoList"
           border
           tooltip-effect="dark"
           style="width: 100%"
@@ -115,10 +115,13 @@
 
     <el-pagination
       background
-      layout="total, sizes, prev, pager, next, jumper"
-      :total="tableData3.length"
-
-      style="float: right">
+      layout="prev, pager, next"
+      :current-page="currentPage"
+      :page-size="pageSize"
+      @current-change="handleCurrentChange"
+      :total="total"
+      style="float: right"
+    >
     </el-pagination>
 
   </div>
@@ -128,6 +131,11 @@
   export default {
     data() {
       return {
+        total: 0,
+        currentPage: 1,
+        infoList: [],
+        movieInfoList: [],
+        pageSize: 4,
         restaurants: [],
         state4: '',
         timeout: null,
@@ -156,6 +164,30 @@
       };
     },
     methods: {
+
+      computeArr() {
+        // 页数，如果有小数，只取整数部分
+        let pageNum = Number(String(this.total / this.pageSize).split(".")[0]);
+        // 定义一个空数组
+        let newArr = [];
+        // 遍历获取的数据，每次遍历都把数组的0位置开始截取，截取数量为每页显示的数量
+        for (let i = 0; i < pageNum; i++) {
+          newArr.push(this.infoList.splice(0, this.pageSize));
+        }
+        // 判断剩余的数据有没有小于每一页的数量，如果小于，就把剩余的数据放进newArr数组
+        if (this.infoList.length < this.pageSize) {
+          newArr.push(this.infoList.splice(0, this.infoList.length));
+        }
+        // 将新的数组赋给infoList[],用来渲染页面
+        this.infoList = newArr;
+        // 第一次进入页面显示this.infoList[]数组的第一个元素
+        this.movieInfoList = this.infoList[0]
+      },
+      handleCurrentChange(currentPage) {
+        // currentPage为当前的页数
+        // 显示当前页数对应的数据
+        this.movieInfoList = this.infoList[currentPage - 1];
+      },
       loadAll() {
         return [
           {"value": "三全鲜食（北新泾店）", "address": "长宁区新渔路144号"},
@@ -253,9 +285,11 @@
     mounted() {
       this.restaurants = this.loadAll();
 
-      this.$axios.get("http://172.16.6.11:10080/GetResearchIndex?token=E7EB78649BEC40CF997F102830DA93B0").then((res) => {
+      this.$axios.get("http://172.16.6.11:10080/GetResearchIndex?token=A2D4B1BD5BCD43E4BFFAD9C8BE76743C").then((res) => {
         console.log(res.data);
-        this.tableData3 = res.data;
+        this.infoList= res.data;
+        this.total = res.data.length;
+       // this.computeArr();
       }, error => {
         console.log(error)
       })
