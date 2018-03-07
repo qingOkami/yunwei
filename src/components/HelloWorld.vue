@@ -137,7 +137,7 @@
     data() {
       return {
         total: 0,
-        // currentPage: 1,
+        currentPage: 1,
         newArr: [],
         infoList: [],
         willFilterInfoList: [],
@@ -266,8 +266,9 @@
         console.log(this.infoList, 195, 195);
       },
       handleCurrentChange(currentPage) {
-
+        this.currentPage = currentPage;
         this.infoList = this.groupedInfoAryAry[currentPage - 1];
+        this.state4 = '';
       },
       filterInfo() {
           this.newArr = [];
@@ -288,15 +289,10 @@
       this.restaurants = this.loadAll();
       // this.$axios.get("http://172.16.6.11:10080/GetResearchIndex?token=A2D4B1BD5BCD43E4BFFAD9C8BE76743C").then((res) => {
       this.$axios.get("http://jsonplaceholder.typicode.com/posts?userId=1").then((res) => {
-        // this.movieInfoList = res.data;
-        // this.infoList = res.data.slice(0, this.pageSize);
-        // this.movieInfoList = res.data;
         this.willFilterInfoList = res.data;
+        // this.willFilterInfoList = [...res.data, ...res.data];
         this.total = res.data.length;
-
-
-
-// let pageNum = Math.ceil(this.total / this.pageSize);
+        // this.total = this.willFilterInfoList.length;
         this.filterInfo();
       }, error => {
         console.log(error);
@@ -305,16 +301,14 @@
     },
     watch: {
       state4: function (val) {
-        console.log(this.groupedInfoAryAry,  308, 308);
         if(val === ''){
-          return this.infoList = this.groupedInfoAryAry[0];
+          return this.infoList = this.groupedInfoAryAry[this.currentPage - 1];
         };
         this.infoList = this.willFilterInfoList.filter(item=>{
           return item.id.toString().includes(val);
         });
       }
     },
-
     // beforeDestroy:function () {
     //   clearInterval(this.timer)
     // }
