@@ -73,10 +73,15 @@
             show-overflow-tooltip>
           </el-table-column>
           <el-table-column
-            prop="FileCode"
+            prop="id"
             label="负责人"
-            width="80">
+            width="RecId">
           </el-table-column>
+          <!--<el-table-column-->
+          <!--prop="FileCode"-->
+          <!--label="负责人"-->
+          <!--width="80">-->
+          <!--</el-table-column>-->
           <el-table-column
             prop="ResearchOrganization"
             label="调研单位"
@@ -116,12 +121,12 @@
     <el-pagination
       background
       layout="prev, pager, next"
-      :current-page="currentPage"
       :page-size="pageSize"
       @current-change="handleCurrentChange"
       :total="total"
       style="float: right"
     >
+      <!--@current-change.sync="pageTurn(currentPage)"-->
     </el-pagination>
 
   </div>
@@ -132,15 +137,18 @@
     data() {
       return {
         total: 0,
-        currentPage: 1,
+        // currentPage: 1,
+        newArr: [],
         infoList: [],
         movieInfoList: [],
-        pageSize: 4,
+        pageSize: 3,
         restaurants: [],
         state4: '',
+        _that: {},
         timeout: null,
         DataList: [],
         results: [],
+        groupedInfoAryAry: [],
         options: [
           {
             value: '选项1',
@@ -165,29 +173,6 @@
     },
     methods: {
 
-      computeArr() {
-        // 页数，如果有小数，只取整数部分
-        let pageNum = Number(String(this.total / this.pageSize).split(".")[0]);
-        // 定义一个空数组
-        let newArr = [];
-        // 遍历获取的数据，每次遍历都把数组的0位置开始截取，截取数量为每页显示的数量
-        for (let i = 0; i < pageNum; i++) {
-          newArr.push(this.infoList.splice(0, this.pageSize));
-        }
-        // 判断剩余的数据有没有小于每一页的数量，如果小于，就把剩余的数据放进newArr数组
-        if (this.infoList.length < this.pageSize) {
-          newArr.push(this.infoList.splice(0, this.infoList.length));
-        }
-        // 将新的数组赋给infoList[],用来渲染页面
-        this.infoList = newArr;
-        // 第一次进入页面显示this.infoList[]数组的第一个元素
-        this.movieInfoList = this.infoList[0]
-      },
-      handleCurrentChange(currentPage) {
-        // currentPage为当前的页数
-        // 显示当前页数对应的数据
-        this.movieInfoList = this.infoList[currentPage - 1];
-      },
       loadAll() {
         return [
           {"value": "三全鲜食（北新泾店）", "address": "长宁区新渔路144号"},
@@ -274,7 +259,15 @@
       },
       handleDeteilsSur() {
         this.$router.push('/DetailsSurvey')
-      }
+      },
+      computeArr(whichPageIndex = 0) {
+        this.infoList = this.newArr[whichPageIndex];
+        console.log(this.infoList, 195, 195);
+      },
+      handleCurrentChange(currentPage) {
+
+        this.infoList = this.groupedInfoAryAry[currentPage - 1];
+      },
     },
     // beforeMount:function () {
     //   var cTime=1;
@@ -282,14 +275,32 @@
     //     console.log(cTime++);
     //   },100);
     // },
-    mounted() {
-      this.restaurants = this.loadAll();
 
+    mounted() {
+      // 页数，如果有小数，只取整数部分
+      // let pageNum = Number(String(this.total / this.pageSize).split(".")[0]);
+
+    },
+    created() {
+      this.restaurants = this.loadAll();
       this.$axios.get("http://172.16.6.11:10080/GetResearchIndex?token=A2D4B1BD5BCD43E4BFFAD9C8BE76743C").then((res) => {
-        console.log(res.data);
-        this.infoList= res.data;
+        this.movieInfoList = res.data;
+        this.infoList = res.data.slice(0, this.pageSize);
+        this.movieInfoList = res.data;
         this.total = res.data.length;
-       // this.computeArr();
+        let pageNum = Math.ceil(this.total / this.pageSize);
+        this.newArr = [];
+        let tmpArr = [];
+        this.movieInfoList.forEach((item, index) => {
+          tmpArr.push(item);
+          const order = index + 1;
+          if (order % this.pageSize === 0 || index === this.movieInfoList.length - 1) {
+            this.newArr.push(tmpArr);
+            tmpArr = [];
+          }
+        });
+        this.groupedInfoAryAry = this.newArr;
+        this.infoList = this.newArr[0];
       }, error => {
         console.log(error)
       })
