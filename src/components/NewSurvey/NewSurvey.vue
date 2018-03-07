@@ -152,6 +152,14 @@
           dialogVisible: false,
           isShow:false,
           results:[],
+          datas:'',
+          newUserInfo: {
+            userName:'n',
+            phone:'13',
+            email:'12',
+            emailPwd:'22',
+            kindleEmail:'asd'
+          },
           ruleForm: {
             name: '',
             region: '',
@@ -192,23 +200,28 @@
       },
       methods: {
         postData () {
-          this.$axios.post('http://172.16.6.11:10080/AddResearch?token=D092816810EC45BDB81FF963CF05AF24', {
-            LastModBy: 'Flintstone',
-            CreatedBy: 'Flintstone',
-            Title: 'Flintstone',
-            Content: 'Flintstone',
-            ProjectName: 'Flintstone',
-            CenterContact: 'Flintstone',
-            PhoneNumber: 'Flintstone',
-            ResearchOrganization: 'Flintstone',
-            ResearchPeople: 'Flintstone',
-            Participants: 'Flintstone',
-            SchoolName: 'Flintstone',
-            Teacher: 'Flintstone',
-            Status: 'Flintstone',
-            StartDateTime: '2018-2-28 14:52:35',
-            EndDateTime: '2018-2-28 14:52:35',
-          }).then((res)=>{
+          var params = new URLSearchParams();
+          params.append('param1', 'value1');
+          this.$axios.post('http://172.16.6.11:10080/AddResearch?token=A2D4B1BD5BCD43E4BFFAD9C8BE76743C',
+          //   {
+          //   LastModBy:"恩恩",
+          //   StartDateTime:"2018-3-7 14:20:41",
+          //   EndDateTime:"2018-3-7 14:20:41",
+          //   CreatedBy:"哈哈哈",
+          //   Title:"无二攷",
+          //   Content:"鹅鹅鹅为",
+          //   CenterContact:"23请问奥所多",
+          //   ProjectName:"身份证 ",
+          //   PhoneNumber:"是否",
+          //   ResearchOrganization:"www",
+          //   ResponsiblePeople:"是打发斯蒂芬",
+          //   Participants:"就开始大幅度",
+          //   Logo:"1",
+          //
+          // },
+            this.newUserInfo
+          )
+            .then((res)=>{
             console.log(res.data);
             this.datas=res.data;
           },error=>{
@@ -263,9 +276,7 @@
       //   },100);
       // },
       mounted() {
-        this.$axios.post("http://172.16.6.11:10080/bods.svc/AddResearch?token=F20BF44FD4D848A89BBAD8BD9E9EB6B8")
-          .then(response => {
-            this.results = response.data.resultes})
+
       },
       beforeUpdate:function () {
 
