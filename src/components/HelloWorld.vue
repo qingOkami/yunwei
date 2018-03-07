@@ -140,7 +140,8 @@
         // currentPage: 1,
         newArr: [],
         infoList: [],
-        movieInfoList: [],
+        willFilterInfoList: [],
+        // movieInfoList: [],
         pageSize: 3,
         restaurants: [],
         state4: '',
@@ -268,43 +269,50 @@
 
         this.infoList = this.groupedInfoAryAry[currentPage - 1];
       },
-    },
-    // beforeMount:function () {
-    //   var cTime=1;
-    //   this.timer=setInterval(() => {
-    //     console.log(cTime++);
-    //   },100);
-    // },
-
-    mounted() {
-      // 页数，如果有小数，只取整数部分
-      // let pageNum = Number(String(this.total / this.pageSize).split(".")[0]);
-
+      filterInfo() {
+          this.newArr = [];
+          let tmpArr = [];
+          this.willFilterInfoList.forEach((item, index) => {
+            tmpArr.push(item);
+            const order = index + 1;
+            if (order % this.pageSize === 0 || index === this.willFilterInfoList.length - 1) {
+              this.newArr.push(tmpArr);
+              tmpArr = [];
+            }
+          });
+          this.groupedInfoAryAry = this.newArr;
+          this.infoList = this.newArr[0];
+        }
     },
     created() {
       this.restaurants = this.loadAll();
-      this.$axios.get("http://172.16.6.11:10080/GetResearchIndex?token=A2D4B1BD5BCD43E4BFFAD9C8BE76743C").then((res) => {
-        this.movieInfoList = res.data;
-        this.infoList = res.data.slice(0, this.pageSize);
-        this.movieInfoList = res.data;
+      // this.$axios.get("http://172.16.6.11:10080/GetResearchIndex?token=A2D4B1BD5BCD43E4BFFAD9C8BE76743C").then((res) => {
+      this.$axios.get("http://jsonplaceholder.typicode.com/posts?userId=1").then((res) => {
+        // this.movieInfoList = res.data;
+        // this.infoList = res.data.slice(0, this.pageSize);
+        // this.movieInfoList = res.data;
+        this.willFilterInfoList = res.data;
         this.total = res.data.length;
-        let pageNum = Math.ceil(this.total / this.pageSize);
-        this.newArr = [];
-        let tmpArr = [];
-        this.movieInfoList.forEach((item, index) => {
-          tmpArr.push(item);
-          const order = index + 1;
-          if (order % this.pageSize === 0 || index === this.movieInfoList.length - 1) {
-            this.newArr.push(tmpArr);
-            tmpArr = [];
-          }
-        });
-        this.groupedInfoAryAry = this.newArr;
-        this.infoList = this.newArr[0];
+
+
+
+// let pageNum = Math.ceil(this.total / this.pageSize);
+        this.filterInfo();
       }, error => {
-        console.log(error)
+        console.log(error);
       })
 
+    },
+    watch: {
+      state4: function (val) {
+        console.log(this.groupedInfoAryAry,  308, 308);
+        if(val === ''){
+          return this.infoList = this.groupedInfoAryAry[0];
+        };
+        this.infoList = this.willFilterInfoList.filter(item=>{
+          return item.id.toString().includes(val);
+        });
+      }
     },
 
     // beforeDestroy:function () {
