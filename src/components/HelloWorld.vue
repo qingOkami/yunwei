@@ -261,6 +261,7 @@
         this.state4 = '';
       },
       filterInfo() {
+
         this.newArr = [];
         let tmpArr = [];
         this.willFilterInfoList.forEach((item, index) => {
@@ -278,6 +279,7 @@
     created() {
       this.$axios.get("http://172.16.6.11:10080/GetResearchIndex?token=A2D4B1BD5BCD43E4BFFAD9C8BE76743C").then((res) => {
       // this.$axios.get("http://jsonplaceholder.typicode.com/posts?userId=1").then((res) => {
+
         this.willFilterInfoList = res.data;
         // this.willFilterInfoList = [...res.data, ...res.data];
         this.total = res.data.length;
@@ -293,6 +295,7 @@
           return this.infoList = this.groupedInfoAryAry[this.currentPage - 1];
         };
         this.infoList = this.willFilterInfoList.filter(item=>{
+
           console.log(arguments);
 
           return item.ResearchOrganization.toString().includes(val);

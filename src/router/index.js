@@ -3,7 +3,7 @@ import Router from 'vue-router'
 import HelloWorld from '@/components/HelloWorld'
 import NewSurvey from '@/components/NewSurvey/NewSurvey'
 import DetailsSurvey from '@/components/DetailsSurvey/DetailsSurvey'
-import Demo from '@/components/Demo'
+// import Demo from '@/components/Demo'
 Vue.use(Router)
 
 export default new Router({
@@ -24,10 +24,10 @@ export default new Router({
       component: DetailsSurvey,
 
     },
-    {
-      path: '/Demo',
-      name: 'demo',
-      component:Demo
-    },
+    // {
+    //   path: '/Demo',
+    //   name: 'demo',
+    //   component:Demo
+    // },
   ]
 })
