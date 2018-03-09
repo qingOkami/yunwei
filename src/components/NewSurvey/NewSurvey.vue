@@ -3,17 +3,16 @@
       <el-tabs type="border-card">
         <el-tab-pane label="新建调研">
           <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
-
             <el-form-item label="调研主题" prop="name">
               <el-input v-model="ruleForm.name" ></el-input>
             </el-form-item>
 
             <el-form-item label="调研内容" prop="desc">
-              <el-input type="textarea" v-model="ruleForm.desc"></el-input>
+              <el-input type="textarea" v-model="ruleForm.desc" :rows="6"></el-input>
             </el-form-item>
 
             <el-form-item label="项目名称" prop="region">
-              <el-select v-model="ruleForm.region" placeholder="请选择">
+              <el-select v-model="ruleForm.region" placeholder="请选择" style="width: 1369px;">
                 <el-option label="安防监控系统" value="shanghai"></el-option>
               </el-select>
             </el-form-item>
@@ -21,61 +20,75 @@
             <el-form-item label="开始时间" required style="display: inline-block">
               <el-col :span="11">
                 <el-form-item prop="date1">
-                  <el-date-picker type="date" placeholder="选择日期" v-model="ruleForm.date1" style="width: 120px;"></el-date-picker>
+                  <el-date-picker type="date" placeholder="选择日期" v-model="ruleForm.date1" style="width: 565px;"></el-date-picker>
                 </el-form-item>
               </el-col>
             </el-form-item>
-            <el-form-item label="截止时间" required style="display: inline-block">
+            <el-form-item label="截止时间" required style="display: inline-block;margin-left: 135px">
               <el-col :span="11">
                 <el-form-item prop="date1">
-                  <el-date-picker type="date" placeholder="选择日期" v-model="ruleForm.date1" style="width: 120px;"></el-date-picker>
+                  <el-date-picker type="date" placeholder="选择日期" v-model="ruleForm.date1" style="width: 565px;"></el-date-picker>
                 </el-form-item>
               </el-col>
             </el-form-item>
-
-            <el-form-item label="中心联系人" prop="name">
-              <el-input v-model="ruleForm.people" style="width: 120px;"></el-input>
+            <el-form-item label="中心联系人" prop="name" style="display: inline-block">
+              <el-input v-model="ruleForm.people" style="width: 565px;"></el-input>
             </el-form-item>
-            <el-form-item label="联系电话" prop="name">
-              <el-input v-model="ruleForm.tell" style="width: 120px;"></el-input>
+            <el-form-item label="联系电话" prop="name" style="display: inline-block;margin-left: 135px">
+              <el-input v-model="ruleForm.tell" style="width: 565px;"></el-input>
             </el-form-item>
             <el-form-item label="调研单位" prop="region">
-              <el-select v-model="ruleForm.region" placeholder="请选择活动区域">
+              <el-select v-model="ruleForm.region" placeholder="请选择活动区域" style="width: 565px;">
                 <el-option label="北京思维实创科技股份有限公司" value="shanghai"></el-option>
                 <el-option label="区域二" value="beijing"></el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label="调研负责人" prop="type">
-              <el-checkbox-group v-model="ruleForm.type">
-                <el-checkbox label="曲欣欣" name="type"></el-checkbox>
-                <el-checkbox label="乐乐" name="type"></el-checkbox>
-                <el-checkbox label="孙国旗" name="type"></el-checkbox>
-                <el-checkbox label="孙红" name="type"></el-checkbox>
-              </el-checkbox-group>
+            <el-form-item label="调研负责人" prop="">
+              <el-tag
+                :key="tag"
+                v-for="tag in dynamicTags"
+                closable
+                :disable-transitions="false"
+                @close="handleClose1(tag)">
+                {{tag}}
+              </el-tag>
+              <el-input
+                class="input-new-tag"
+                v-if="inputVisible"
+                v-model="inputValue"
+                ref="saveTagInput"
+                size="small"
+                @keyup.enter.native="handleInputConfirm"
+                @blur="handleInputConfirm"
+              >
+              </el-input>
+              <el-button v-else class="button-new-tag" size="small" @click="showInput">+ New Tag</el-button>
+              <el-button type="text" @click="handlePeople">请选择调研负责人</el-button>
+              <el-table :data="tableData" style="width:700px;border:1px solid red;position: fixed;top:100px;left: 30%" v-show="true"><el-table-column prop="date" label="日期" width="180"></el-table-column>
+
+                <el-table-column prop="name" label="姓名" width="180"> <template slot-scope="scope">
+                  <el-button type="text" size="small" style="color: #606266" @click="handlePeople" v-model="tableData.name">{{scope.row.name}}</el-button>
+                </template></el-table-column>
+                <el-table-column prop="address" label="地址"></el-table-column></el-table>
             </el-form-item>
 
             <el-form-item label="参与负责人" prop="resource">
-              <el-radio-group v-model="ruleForm.resource">
-                <el-radio label="屈欣欣"></el-radio>
-                <el-radio label="孙红"></el-radio>
-              </el-radio-group>
+              <el-button type="text">请选择调研负责人</el-button>
             </el-form-item>
             <el-form-item label="学校名称" prop="region" style="display: inline-block">
-              <el-select v-model="ruleForm.region" placeholder="请选择学校" style="width: 300px">
-                <el-option label="十八里店小学" value="shanghai"></el-option>
-                <el-option label="奥园幼儿园" value="beijing"></el-option>
+              <el-select v-model="ruleForm.region" placeholder="请选择学校" style="width: 565px">
+                <el-option label="十八里店小学" value="bb"></el-option>
+                <el-option label="奥园幼儿园" value="aa" ></el-option>
               </el-select>
             </el-form-item>
 
-            <el-form-item label="学校负责人" prop="name" style="display: inline-block">
-              <el-input v-model="ruleForm.people" style="width: 300px;"></el-input>
+            <el-form-item label="学校负责人" prop="name" style="display: inline-block;margin-left: 135px">
+              <el-input v-model="ruleForm.lianxi" style="width: 565px;"></el-input>
             </el-form-item>
             <el-form-item>
               <el-button type="primary" @click="dialogVisible = true">预览</el-button>
               <el-button type="primary" @click="postData">保存</el-button>
               <el-button @click="resetForm('ruleForm')">返回</el-button>
-              <el-button @click="getComputedDate()">computed</el-button>
-              <el-button @click="getMethonds()">methonds</el-button>
             </el-form-item>
           </el-form>
         </el-tab-pane>
@@ -149,17 +162,48 @@
       data() {
 
         return {
+          datademo:'',
+          tableData: [{
+            date: '2016-05-02',
+            name: '王小虎',
+            address: '上海市普陀区金沙江路 1518 弄'
+          }, {
+            date: '2016-05-04',
+            name: '王小虎',
+            address: '上海市普陀区金沙江路 1517 弄'
+          }, {
+            date: '2016-05-01',
+            name: '王小虎',
+            address: '上海市普陀区金沙江路 1519 弄'
+          }, {
+            date: '2016-05-03',
+            name: '王小虎',
+            address: '上海市普陀区金沙江路 1516 弄'
+          }],
+          dynamicTags: ['标签一', '标签二', '标签三'],
+          inputVisible: false,
+          inputValue: '',
           dialogVisible: false,
           isShow:false,
           results:[],
+          school:
+            {
+              LastModBy:"恩恩",
+              StartDateTime:"2018-3-7 14:20:41",
+              EndDateTime:"2018-3-7 14:20:41",
+              CreatedBy:"哈哈哈",
+              Title:"test1",
+              Content:"鹅鹅鹅为",
+              CenterContact:"23请问奥所多",
+              ProjectName:"身份证 ",
+              PhoneNumber:"是否",
+              ResearchOrganization:"www",
+              ResponsiblePeople:["hahaha"],
+              Participants:"就开始大幅度",
+              Logo:"1",
+              SchoolName:''
+            },
           datas:'',
-          newUserInfo: {
-            userName:'n',
-            phone:'13',
-            email:'12',
-            emailPwd:'22',
-            kindleEmail:'asd'
-          },
           ruleForm: {
             name: '',
             region: '',
@@ -170,7 +214,8 @@
             resource: '',
             desc: '',
             tell:'',
-            people:''
+            people:'',
+            lianxi:''
           },
           rules: {
             name: [
@@ -178,7 +223,7 @@
               { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
             ],
             region: [
-              { required: true, message: '请选择活动区域', trigger: 'change' }
+              { required: false, message: '请选择活动区域', trigger: 'change' }
             ],
             date1: [
               { type: 'date', required: true, message: '请选择日期', trigger: 'change' }
@@ -199,27 +244,34 @@
         };
       },
       methods: {
+        handlePeople(){
+          let tableData=this.tableData.name
+          this.dynamicTags.push(tableData);
+        },
+        handleClose1(tag) {
+          this.dynamicTags.splice(this.dynamicTags.indexOf(tag), 1)
+        },
+        showInput() {
+          this.inputVisible = true;
+          this.$nextTick(_ => {
+            this.$refs.saveTagInput.$refs.input.focus();
+          });
+        },
+
+        handleInputConfirm() {
+          let inputValue = this.inputValue;
+          if (inputValue) {
+            this.dynamicTags.push(inputValue);
+          }
+          this.inputVisible = false;
+          this.inputValue = '';
+        },
         postData () {
-          var params = new URLSearchParams();
-          params.append('param1', 'value1');
+          var obj=JSON.stringify(this.school);
           this.$axios.post('http://172.16.6.11:10080/AddResearch?token=A2D4B1BD5BCD43E4BFFAD9C8BE76743C',
-          //   {
-          //   LastModBy:"恩恩",
-          //   StartDateTime:"2018-3-7 14:20:41",
-          //   EndDateTime:"2018-3-7 14:20:41",
-          //   CreatedBy:"哈哈哈",
-          //   Title:"无二攷",
-          //   Content:"鹅鹅鹅为",
-          //   CenterContact:"23请问奥所多",
-          //   ProjectName:"身份证 ",
-          //   PhoneNumber:"是否",
-          //   ResearchOrganization:"www",
-          //   ResponsiblePeople:"是打发斯蒂芬",
-          //   Participants:"就开始大幅度",
-          //   Logo:"1",
-          //
-          // },
-            this.newUserInfo
+            obj,
+          //   params,
+
           )
             .then((res)=>{
             console.log(res.data);
@@ -250,18 +302,9 @@
               done();
             })
             .catch(_ => {});
-        },
-        getMethonds:function () {
-          alert(new Date())
-        },
-        getComputedDate: function () {
-          alert(this.computedTest)
         }
       },
       computed:{
-        computedTest:function(){
-          return new Date()
-        }
       },
       beforeCreate:function () {
 
@@ -269,27 +312,10 @@
       created:function () {
 
       },
-      // beforeMount:function () {
-      //   var cTime=1;
-      //   setInterval(() => {
-      //     console.log(cTime++);
-      //   },100);
-      // },
       mounted() {
 
       },
-      beforeUpdate:function () {
 
-      },
-      updated:function () {
-
-      },
-      beforeDestroy:function () {
-
-      },
-      destroyed:function () {
-        clearInterval()
-      }
     }
 </script>
 
