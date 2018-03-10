@@ -296,6 +296,8 @@
           console.log(arguments);
 
           return item.ResearchOrganization.toString().includes(val);
+          //if(item.title.toString().includes(val)) return true;
+          //if(item.body.toString().includes(val)) return true;
         });
       }
     },
