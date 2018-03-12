@@ -9,7 +9,7 @@
           <span>我的代办(<span style="color:darkturquoise">11</span>)</span>
         </div>
         <div>
-          <el-button style="margin:10px 0 0 15px">批量删除</el-button>
+          <el-button style="margin:10px 0 0 15px" @click="handleDelete">批量删除</el-button>
           <div style="float: right">
 
             <el-autocomplete
@@ -19,23 +19,41 @@
               @select="handleSelect"
             ></el-autocomplete>
 
-            <el-select v-model="value" placeholder="更多条件" style="width: 100px;">
-
-              <el-option
-                v-for="item in options"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              style="height: 100%;width: 1501px;"
-              >
-                <el-form :model="addform">
-                  <el-form-item label="活动名称" prop="name">
-                    <el-input v-model="addform.name"></el-input>
-                  </el-form-item>
-                </el-form>
-              </el-option>
-            </el-select>
-
+            <el-popover ref="popover4"
+                        placement="bottom"
+                        width="1200"
+                        trigger="click">
+              <el-form  label-width="80px">
+                <el-form-item  label="调研主题" style="display: inline-block">
+                  <el-input style="width: 300px" v-model="state7"></el-input>
+                </el-form-item>
+                <el-form-item label="学校名称" prop="region" style="display: inline-block;">
+                  <el-select v-model="schooltitle" value-key="RecId" placeholder="请选择活动区域" style="width: 300px" >
+                    <el-option v-for="(val,index) in willFilterInfoList" :label="val.SchoolName" :value="val" :key="index" >
+                    </el-option>
+                  </el-select>
+                </el-form-item>
+                <el-form-item  label="负责人" style="display: inline-block">
+                  <el-input style="width: 300px" v-model="state5"></el-input>
+                </el-form-item>
+                <el-form-item label="调研单位" prop="region" style="display: inline-block;">
+                  <el-select v-model="schoolpeo" value-key="RecId" placeholder="请选择活动区域" style="width: 300px" >
+                    <el-option v-for="(val,index) in willFilterInfoList" :label="val.ResearchOrganization" :value="val" :key="index" >
+                    </el-option>
+                  </el-select>
+                </el-form-item>
+                <el-form-item  label="调研人" style="display: inline-block;margin-left: 28px">
+                  <el-input style="width: 300px" v-model="state6"></el-input>
+                </el-form-item>
+                <el-form-item label="状态" prop="region" style="display: inline-block;">
+                  <el-select v-model="schooltitle" value-key="RecId" placeholder="请选择活动区域" style="width: 300px;margin-left: 23px" >
+                    <el-option v-for="(val,index) in willFilterInfoList" :label="val.status" :value="val" :key="index" >
+                    </el-option>
+                  </el-select>
+                </el-form-item>
+              </el-form>
+            </el-popover>
+            <el-button v-popover:popover4>更多条件</el-button>
             <el-button type="info">刷新</el-button>
             <router-link to="/NewSurvey">
               <el-button type="success" style="margin-left: 0">新建调研</el-button>
@@ -74,7 +92,7 @@
             width="200">
             <template slot-scope="scope">
               <el-button type="text" size="small" style="color: #606266" @click="handleDeteilsSur()">
-                {{scope.row.ResearchOrganization }}
+                {{scope.row.Title }}
               </el-button>
             </template>
           </el-table-column>
@@ -84,7 +102,7 @@
             show-overflow-tooltip>
             <template slot-scope="scope">
               <el-button type="text" size="small" style="color: #606266" @click="handleDeteilsSur()">
-                {{scope.row.RecId}}
+                {{scope.row.SchoolName}}
               </el-button>
             </template>
           </el-table-column>
@@ -94,7 +112,7 @@
             width="RecId">
             <template slot-scope="scope">
               <el-button type="text" size="small" style="color: #606266" @click="handleDeteilsSur()">
-                {{scope.row.id }}
+                {{scope.row.ResponsiblePeople }}
               </el-button>
             </template>
           </el-table-column>
@@ -117,7 +135,7 @@
             width="120">
             <template slot-scope="scope">
               <el-button type="text" size="small" style="color: #606266" @click="handleDeteilsSur()">
-                {{scope.row.FileCode }}
+                {{scope.row.ResearchPeople }}
               </el-button>
             </template>
           </el-table-column>
@@ -163,9 +181,14 @@
   export default {
     data() {
       return {
+        ruleForm:{
+          region:""
+        },
         addform:{
           name:''
         },
+        schooltitle:[],
+        schoolpeo:[],
         total: 0,
         currentPage: 1,
         newArr: [],
@@ -175,39 +198,22 @@
         pageSize: 3,
         restaurants: [],
         state4: '',
+        state5:'',
+        state6:'',
+        state7:'',
         _that: {},
         timeout: null,
         DataList: [],
         results: [],
         groupedInfoAryAry: [],
         goodcode:[],
-        options: [
-          {
-            name:'',
-            value: '选项1',
-            label: '黄金糕'
-          }, {
-            value: '选项2',
-            label: '双皮奶'
-          }, {
-            value: '选项3',
-            label: '蚵仔煎'
-          }, {
-            value: '选项4',
-            label: '龙须面'
-          }, {
-            value: '选项5',
-            label: '北京烤鸭'
-          }],
         tableData3: [],
         multipleSelection: [],
-        value: '',
       };
     },
     methods: {
       handleDelete(index, row) {
         this.infoList.splice(index, 1);
-        // let para = Object.assign({}, this.goodcode)
         let para = this.goodcode
         var objet=JSON.stringify(para);
         this.$axios.post("http://172.16.6.11:10080/BatchDeleteResearch?token=A2D4B1BD5BCD43E4BFFAD9C8BE76743C",objet).then((res) => {
@@ -249,7 +255,13 @@
         this.multipleSelection = val;
       },
       handleDeteilsSur() {
-        this.$router.push('/DetailsSurvey')
+        this.$axios.get("http://172.16.6.11:10080/GetResearchInfo?token=A2D4B1BD5BCD43E4BFFAD9C8BE76743C&this.filecode="+1).then((res) => {
+          console.log(res.data);
+          this.$router.push('/DetailsSurvey')
+        }, error => {
+          console.log(error);
+        })
+
       },
       computeArr(whichPageIndex = 0) {
         this.infoList = this.newArr[whichPageIndex];
@@ -259,6 +271,9 @@
         this.currentPage = currentPage;
         this.infoList = this.groupedInfoAryAry[currentPage - 1];
         this.state4 = '';
+        this.state5='';
+        this.state6='';
+        this.state7='';
       },
       filterInfo() {
 
@@ -279,10 +294,11 @@
     created() {
       this.$axios.get("http://172.16.6.11:10080/GetResearchIndex?token=A2D4B1BD5BCD43E4BFFAD9C8BE76743C").then((res) => {
       // this.$axios.get("http://jsonplaceholder.typicode.com/posts?userId=1").then((res) => {
-
         this.willFilterInfoList = res.data;
+        console.log(res.data);
         // this.willFilterInfoList = [...res.data, ...res.data];
         this.total = res.data.length;
+        console.log(this.willFilterInfoList);
         // this.total = this.willFilterInfoList.length;
         this.filterInfo();
       }, error => {
@@ -295,14 +311,44 @@
           return this.infoList = this.groupedInfoAryAry[this.currentPage - 1];
         };
         this.infoList = this.willFilterInfoList.filter(item=>{
-
           console.log(arguments);
-
-          return item.ResearchOrganization.toString().includes(val);
-          //if(item.title.toString().includes(val)) return true;
-          //if(item.body.toString().includes(val)) return true;
+          // return item.ResearchOrganization.toString().includes(val);
+          if(item.ResearchOrganization.toString().includes(val)) return true;
+          if(item.FileCode.toString().includes(val)) return true;
+          if(item.ResponsiblePeople.toString().includes(val)) return true;
+          if(item.SchoolName.toString().includes(val)) return true;
+          if(item.Status.toString().includes(val)) return true;
+          if(item.Title.toString().includes(val)) return true;
+          if(item.Title.toString().includes(val)) return true;
         });
-      }
+      },
+      state5:function (val) {
+        if(val === ''){
+          return this.infoList = this.groupedInfoAryAry[this.currentPage - 1];
+        };
+        this.infoList = this.willFilterInfoList.filter(item=>{
+          console.log(arguments);
+          return item.ResponsiblePeople.toString().includes(val);
+        });
+      },
+      state6:function (val) {
+        if(val === ''){
+          return this.infoList = this.groupedInfoAryAry[this.currentPage - 1];
+        };
+        this.infoList = this.willFilterInfoList.filter(item=>{
+          console.log(arguments);
+          return item.ResearchPeople.toString().includes(val);
+        });
+      },
+      state7:function (val) {
+        if(val === ''){
+          return this.infoList = this.groupedInfoAryAry[this.currentPage - 1];
+        };
+        this.infoList = this.willFilterInfoList.filter(item=>{
+          console.log(arguments);
+          return item.Title.toString().includes(val);
+        });
+      },
     },
     // beforeDestroy:function () {
     //   clearInterval(this.timer)
