@@ -21,11 +21,11 @@
             <el-col :span="11">
               <el-form-item prop="">
                 <el-date-picker type="date" placeholder="选择日期" v-model="school.StartDateTime"
-                                style="width: 565px;"></el-date-picker>
+                                @change="logTimeChange"             style="width: 565px;"></el-date-picker>
               </el-form-item>
             </el-col>
           </el-form-item>
-          <el-form-item label="截止时间" required style="display: inline-block;margin-left: 135px">
+          <el-form-item label="截止时间" @change="endTimeChange" required style="display: inline-block;margin-left: 135px">
             <el-col :span="11">
               <el-form-item>
                 <el-date-picker type="date" placeholder="选择日期" v-model="school.EndDateTime"
@@ -82,15 +82,21 @@
             </el-table>
           </el-form-item>
 
-
+<el-form v-for="(item,key) in schoolcreat" :key="key">
+  <template slot-scope="scope">
           <el-form-item label="学校名称" style="display: inline-block">
-            <el-select v-model="school.SchoolName" value-key="UnitId" placeholder="请选择学校" style="width: 565px">
-              <el-option v-for="(item,index) in schoolId" :key="index" :label="item.SchoolName"
-                         :value="item"></el-option>
+            <el-select @change="selectSchool" v-model="school[key]" value-key="UnitId" placeholder="请选择学校" style="width: 400px">
+              <el-option v-for="(schoolOb,index) in schoolObjAry" :key="index" :label="schoolOb.SchoolName"
+                         :value="schoolOb.SchoolName"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="学校负责人" style="display: inline-block;margin-left: 135px">
-            <el-input readonly style="width: 565px;">{{school.SchoolName}}</el-input>
+            <el-input :value="selectedValue"  readonly style="width: 400px;"></el-input>
+          </el-form-item>
+  </template>
+</el-form>
+          <el-form-item>
+            <el-button @click="creactSchool">添加更多学校</el-button>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="dialogVisible = true">预览</el-button>
@@ -105,49 +111,50 @@
       :visible.sync="dialogVisible"
       width="60%"
       :before-close="handleClose">
-      <span>这是一段信息</span>
-      <h2 style="text-align: center">朝阳区其他公办幼儿园安防监控达标建设勘察介绍信</h2>
-      <div style="padding: 0 60px">
-        <p style="margin-top: 35px" id="kk">
+
+      <el-carousel indicator-position="none" style="height: 800px;" :autoplay=false>
+        <el-carousel-item style="height: 700px"  v-for="item in 4" :key="item">
+          <span><img src="../../assets/images/Title.png" alt=""></span>
+          <h2 style="text-align: center">朝阳区其他公办幼儿园安防监控达标建设勘察介绍信</h2>
+          <div style="padding: 0 60px">
+            <p style="margin-top: 35px" id="kk">
             <span style="font-weight:400;font-size: 16px;">
               &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;根据朝阳区教育委员会安排，依据《关于加强本市中小学幼儿园安全工作的意见》（京教勤[2010]8号）文件精神，进一步提高个教育单位安全防范能力，了解幼儿园现有安防监控系统现状。
           </span>
-        </p>
+            </p>
 
-        <p style="margin-top: 40px">
+            <p style="margin-top: 40px">
           <span style="font-weight:400;font-size: 16px;">
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;兹介绍 王宝磊 同志对贵单位安防监控系统进行勘察，望贵单位予以积极配合。
           </span>
-        </p>
-        <p style="margin-top: 20px">
+            </p>
+            <p style="margin-top: 20px">
   <span style="font-weight:400;font-size: 16px;">
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本次现场调研时间：2017年11月24日-2017年12月11日，在此期间，如有调研人员前来与贵单位联系，请贵单位予以接洽。
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本次现场调研时间：<child v-bind:my-message="scdates"></child>至<child v-bind:my-message="scdate"></child>，在此期间，如有调研人员前来与贵单位联系，请贵单位予以接洽。
   </span>
-        </p>
-        <p style="margin-top: 40px">
+            </p>
+            <p style="margin-top: 40px">
             <span style="font-weight:400;font-size: 16px;">
-              信息中心联系人：高超
+              信息中心联系人：<child v-bind:my-message="school.CenterContact"></child>
             </span>
-        </p>
+            </p>
 
-        <p>
+            <p>
             <span style="font-weight:400;font-size: 16px;">
               联系电话：85979246-84044
             </span>
-        </p>
-        <p>
-          这里是图片
-          <img src="" alt="">
-        </p>
-        <div style="text-align: right">
-          <p><span>北京市朝阳区现代教育信息网络中心</span></p>
-          <p style="margin-right: 50px"><span>2018年01月02日</span></p>
-        </div>
-      </div>
-      <span slot="footer" class="dialog-footer">
-    <el-button style="margin-top: 100px" @click="dialogVisible = false">取 消</el-button>
-    <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
-  </span>
+            </p>
+            <p>
+              <img style="width: 120px;height: 120px;" src="http://qr.liantu.com/api.php?text=http://172.16.6.11:10080/GetResearchInfo?token=C0869589E15E469CA031AC09FD874234" alt="">
+            </p>
+            <div style="text-align: right">
+              <p><span>北京市朝阳区现代教育信息网络中心</span></p>
+              <p style="margin-right: 50px"><child v-bind:my-message="scdate"></child></p>
+            </div>
+            <h3 style="text-align: center;margin-top: 30px">{{item}}</h3>
+          </div>
+        </el-carousel-item>
+      </el-carousel>
     </el-dialog>
   </div>
 </template>
@@ -156,6 +163,12 @@
   export default {
     data() {
       return {
+        scdate:'',
+        scdates:'',
+        schoolcreat:[1],
+        schoolObjAry: [],
+        selectedValue: 'ok@qq.com',
+        selectedSchoolId:'',
         tableData:
           [],
         datas: '',
@@ -189,7 +202,39 @@
 
       };
     },
+    components:{
+      child: {
+        props: ['myMessage'],
+        template: '<span>{{myMessage}}</span>'
+      }
+    },
     methods: {
+      logTimeChange(date){
+        var y = date.getFullYear();
+        var m = date.getMonth() + 1;
+        m = m < 10 ? '0' + m : m;
+        var d = date.getDate();
+        d = d < 10 ? ('0' + d) : d;
+        this.scdates= y + '年' + m + '月' + d+'日';
+      },
+      endTimeChange(date){
+        var y = date.getFullYear();
+        var m = date.getMonth() + 1;
+        m = m < 10 ? '0' + m : m;
+        var d = date.getDate();
+        d = d < 10 ? ('0' + d) : d;
+        this.scdate= y + '年' + m + '月' + d+'日';
+      },
+      creactSchool(){
+        console.log(111);
+        this.schoolcreat.push(1);
+      },
+      selectSchool(val){
+        const [selectedSchoolObj] = this.schoolObjAry.filter(item=>{
+          return item.SchoolName == val;
+        });
+        this.selectedValue = selectedSchoolObj.Value;
+      },
       handlenav() {
         this.isNav = !this.isNav
       },
@@ -239,17 +284,21 @@
           })
           .catch(_ => {
           });
-      }
+      },
+
     },
     mounted() {
       this.$axios.get('http://172.16.6.11:10080/GetUserList?token=A2D4B1BD5BCD43E4BFFAD9C8BE76743C').then((res) => {
         this.tableData = res.data;
         this.tableDatas = res.data;
+        var d = new Date();
+        var date = d.getFullYear()+"年"+(d.getMonth()+1)+"月"+d.getDate()+"日"
+        this.scdate=date
       }, error => {
         console.log(error);
       });
       this.$axios.get('http://172.16.6.11:10080/GetUnitList?token=A2D4B1BD5BCD43E4BFFAD9C8BE76743C').then((res) => {
-        this.schoolId = res.data;
+        this.schoolObjAry = res.data;
         console.log(res.data);
       }, error => {
         console.log(error);
@@ -260,4 +309,12 @@
 </script>
 
 <style scoped>
+  .el-carousel__item h5 {
+    color: #000;
+    font-size: 18px;
+    opacity: 0.75;
+    line-height: 100px;
+    margin: 0;
+    text-align: center;
+  }
 </style>

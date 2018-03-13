@@ -82,7 +82,7 @@
             width="120">
             <template slot-scope="scope">
               <el-button type="text" size="small" style="color: #606266" @click="handleDeteilsSur()">
-                {{scope.row.FileCode }}
+                {{scope.row.FileCode}}
               </el-button>
             </template>
           </el-table-column>
@@ -146,20 +146,17 @@
           </el-table-column>
           <el-table-column
             label="操作"
-            width="180">
+            width="80">
             <template slot-scope="scope">
               <el-button
                 size="mini"
                 style="border: 0"
                 @click="handleDelete(scope.$index, scope.row)">
-                <img src="../assets/icon/dfp.png" alt="">
+                <img src="../assets/icon/user.png" alt="">
               </el-button>
             </template>
           </el-table-column>
         </el-table>
-        <div style="margin-top: 20px">
-          <el-button @click="toggleSelection()">取消选择</el-button>
-        </div>
       </el-main>
     </el-container>
 
@@ -209,6 +206,7 @@
         goodcode:[],
         tableData3: [],
         multipleSelection: [],
+        obd:{FileCode:1}
       };
     },
     methods: {
@@ -242,20 +240,14 @@
       handleSelect(item) {
         console.log(item);
       },
-      toggleSelection(rows) {
-        if (rows) {
-          rows.forEach(row => {
-            this.$refs.multipleTable.toggleRowSelection(row);
-          });
-        } else {
-          this.$refs.multipleTable.clearSelection();
-        }
-      },
       handleSelectionChange(val) {
         this.multipleSelection = val;
       },
       handleDeteilsSur() {
-        this.$axios.get("http://172.16.6.11:10080/GetResearchInfo?token=A2D4B1BD5BCD43E4BFFAD9C8BE76743C&this.filecode="+1).then((res) => {
+        var oba = JSON.stringify(this.obd);
+        this.$axios.post("http://172.16.6.11:10080/GetResearchInfo?token=A2D4B1BD5BCD43E4BFFAD9C8BE76743C",{
+          oba
+        }).then((res) => {
           console.log(res.data);
           this.$router.push('/DetailsSurvey')
         }, error => {
