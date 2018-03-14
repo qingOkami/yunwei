@@ -298,7 +298,7 @@
                     });
             }
         },
-        mounted() {
+        beforeCreate() {
             this.$axios.get('http://172.16.6.11:10080/GetUserList?token=A2D4B1BD5BCD43E4BFFAD9C8BE76743C').then((res) => {
                 this.tableData = res.data;
                 this.tableDatas = res.data;
