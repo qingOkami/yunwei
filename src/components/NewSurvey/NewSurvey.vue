@@ -20,7 +20,7 @@
           <el-form-item label="开始时间" required style="display: inline-block">
             <el-col :span="11">
               <el-form-item prop="">
-                <el-date-picker type="date" placeholder="选择日期" v-model="school.StartDateTime"
+                <el-date-picker type="datetime" placeholder="选择日期" v-model="school.StartDateTime"
                                 @change="logTimeChange"             style="width: 565px;"></el-date-picker>
               </el-form-item>
             </el-col>
@@ -28,7 +28,7 @@
           <el-form-item label="截止时间" @change="endTimeChange" required style="display: inline-block;margin-left: 135px">
             <el-col :span="11">
               <el-form-item>
-                <el-date-picker type="date" placeholder="选择日期" v-model="school.EndDateTime"
+                <el-date-picker type="datetime" placeholder="选择日期" v-model="school.EndDateTime"
                                 style="width: 565px;"></el-date-picker>
               </el-form-item>
             </el-col>
@@ -82,24 +82,29 @@
             </el-table>
           </el-form-item>
 
-<el-form v-for="(item,key) in schoolcreat" :key="key">
-  <template slot-scope="scope">
-          <el-form-item label="学校名称" style="display: inline-block">
-            <el-select @change="selectSchool" v-model="school[key]" value-key="UnitId" placeholder="请选择学校" style="width: 400px">
-              <el-option v-for="(schoolOb,index) in schoolObjAry" :key="index" :label="schoolOb.SchoolName"
-                         :value="schoolOb.SchoolName"></el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="学校负责人" style="display: inline-block;margin-left: 135px">
-            <el-input :value="selectedValue"  readonly style="width: 400px;"></el-input>
-          </el-form-item>
-  </template>
-</el-form>
+          <el-form v-for="(selectedSchoolObj, index) in selectedSchoolObjAry" :key="index">
+            <template slot-scope="scope">
+              <el-form-item label="学校名称" style="display: inline-block">
+                <el-select @change="selectSchool(selectedSchoolObj.SchoolName, index)" v-model="selectedSchoolObj.SchoolName"
+                           value-key="UnitId"
+                           placeholder="请选择学校" style="width: 400px">
+                  <el-option v-for="(selectedSchoolFromApiObj, i) in schoolObjAry" :key="i"
+                             :label="selectedSchoolFromApiObj.SchoolName"
+                             v-model="selectedSchoolFromApiObj.SchoolName"></el-option>
+                </el-select>
+              </el-form-item>
+              <el-form-item label="学校负责人" style="display: inline-block;margin-left: 135px">
+                <el-input :value="selectedSchoolObj.Value" readonly style="width: 400px;"></el-input>
+              </el-form-item>
+              <el-button @click="deleteRow(selectedSchoolObj)">删除</el-button>
+            </template>
+
+          </el-form>
           <el-form-item>
             <el-button @click="creactSchool">添加更多学校</el-button>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="dialogVisible = true">预览</el-button>
+            <el-button type="primary" @click="dialogVisibles">预览</el-button>
             <el-button type="primary" @click="postData">保存</el-button>
             <el-button @click="resetForm">返回</el-button>
           </el-form-item>
@@ -162,15 +167,23 @@
 <script>
   export default {
     data() {
+      let defaultSchoolObj = {
+        "SchoolName": null,
+        "UnitId": null,
+        "Value": null
+      };
       return {
-        scdate:'',
-        scdates:'',
-        schoolcreat:[1],
+        scdate: '',
+        scdates: '',
+        // schoolcreat: [1],
+        defaultSchoolObj,
+        selectedSchoolObjAry: [
+          {...defaultSchoolObj},
+        ],
         schoolObjAry: [],
-        selectedValue: 'ok@qq.com',
-        selectedSchoolId:'',
-        tableData:
-          [],
+        selectedEmail: 'ok@qq.com',
+        selectedSchoolId: '',
+        tableData: [],
         datas: '',
         tableDatas: [],
         dynamicTags: [],
@@ -196,9 +209,10 @@
             ResponsiblePeople: [],
             Participants: [],
             Logo: "",
-            SchoolName: '',
-            Teacher: ''
+            SchoolName:[],
+            Teacher: []
           },
+        sas:[]
 
       };
     },
@@ -209,6 +223,49 @@
       }
     },
     methods: {
+      dialogVisibles(){
+        this.dialogVisible=true;
+        this.school.Logo="0";
+        var logos=this.school;
+        this.$axios.post('http://172.16.6.11:10080/AddResearch?token=A2D4B1BD5BCD43E4BFFAD9C8BE76743C',
+          logos
+        )
+          .then((res) => {
+            console.log(res.data);
+          }, error => {
+            console.log(error);
+          })
+      },
+      deleteRow(esa){
+        this.selectedSchoolObjAry.splice(esa,1)
+        // this.school.Teacher.splice(esa,1)
+        // this.school.splice(esa,1)
+      },
+      creactSchool() {
+        //for(var oaa in this.defaultSchoolObj){
+
+
+        this.selectedSchoolObjAry.push({...this.defaultSchoolObj});
+        //}
+      },
+      selectSchool(theOneId, indexInSelectedSchoolObjAry) {
+        const [selectedSchoolFormApiObj] = this.schoolObjAry.filter(item => {
+          return item.SchoolName == theOneId;
+        });
+        //循环遍历匹配上的对象中的属性赋值给已被监听的对象，如果直接赋值为该对象，vue不会更新数据
+        for(let key in selectedSchoolFormApiObj){
+          if(selectedSchoolFormApiObj.hasOwnProperty(key)){
+            this.selectedSchoolObjAry[indexInSelectedSchoolObjAry][key] =  selectedSchoolFormApiObj[key];
+          }
+          //console.log(selectedSchoolFormApiObj.SchoolName);
+          if(this.school.SchoolName.indexOf(selectedSchoolFormApiObj.SchoolName) == -1){
+            this.school.SchoolName.push(selectedSchoolFormApiObj.SchoolName)
+          }
+          if(this.school.Teacher.indexOf(selectedSchoolFormApiObj.Value) == -1){
+            this.school.Teacher.push(selectedSchoolFormApiObj.Value)
+          }
+        }
+      },
       logTimeChange(date){
         var y = date.getFullYear();
         var m = date.getMonth() + 1;
@@ -224,16 +281,6 @@
         var d = date.getDate();
         d = d < 10 ? ('0' + d) : d;
         this.scdate= y + '年' + m + '月' + d+'日';
-      },
-      creactSchool(){
-        console.log(111);
-        this.schoolcreat.push(1);
-      },
-      selectSchool(val){
-        const [selectedSchoolObj] = this.schoolObjAry.filter(item=>{
-          return item.SchoolName == val;
-        });
-        this.selectedValue = selectedSchoolObj.Value;
       },
       handlenav() {
         this.isNav = !this.isNav
@@ -260,13 +307,21 @@
         this.tables.splice(this.tables.indexOf(tags), 1)
       },
       postData() {
+        this.school.Logo="1";
         var obj = JSON.stringify(this.school);
         this.$axios.post('http://172.16.6.11:10080/AddResearch?token=A2D4B1BD5BCD43E4BFFAD9C8BE76743C',
-          obj,
+          obj
+          //{headers:{
+              // "Access-Control-Allow-Origin" : "*",
+              // "Access-Control-Allow-Methods" : "GET,POST,PUT,DELETE,OPTIONS",
+              // "Access-Control-Allow-Headers": "Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With",
+              //"Content-Type":"application/x-www-form-urlencoded; charset=UTF-8"
+           // }}
         )
           .then((res) => {
             console.log(res.data);
             this.datas = res.data;
+            this.$router.push('/')
           }, error => {
             console.log(error);
           })

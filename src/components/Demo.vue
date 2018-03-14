@@ -83,16 +83,24 @@
           </el-form-item>
 
 
-          <el-form-item label="学校名称" style="display: inline-block">
-            <el-select @change="selectSchool" v-model="selectedSchoolId" ref="school-id-ele" :value="91" value-key="UnitId" placeholder="请选择学校" style="width: 565px">
-              <el-option v-for="(schoolObj,index) in schoolObjAry" :key="index" :label="schoolObj.id"
-                         :value="schoolObj.id"></el-option>
-            </el-select>
-
-          </el-form-item>
-          <el-form-item label="学校负责人" style="display: inline-block;margin-left: 135px">
-            <!--<el-input readonly style="width: 565px;">{{school.SchoolName}}</el-input>-->
-            <el-input :value="selectedEmail" readonly style="width: 565px;"></el-input>
+          <el-form v-for="(selectedSchoolObj, index) in selectedSchoolObjAry" :key="index">
+            <template slot-scope="scope">
+              <el-form-item label="学校名称" style="display: inline-block">
+                <el-select @change="selectSchool(selectedSchoolObj.id, index)" v-model="selectedSchoolObj.id"
+                           value-key="UnitId"
+                           placeholder="请选择学校" style="width: 400px">
+                  <el-option v-for="(selectedSchoolFromApiObj, i) in schoolObjAry" :key="i"
+                             :label="selectedSchoolFromApiObj.id"
+                             v-model="selectedSchoolFromApiObj.id"></el-option>
+                </el-select>
+              </el-form-item>
+              <el-form-item label="学校负责人" style="display: inline-block;margin-left: 135px">
+                <el-input :value="selectedSchoolObj.email" readonly style="width: 400px;"></el-input>
+              </el-form-item>
+            </template>
+          </el-form>
+          <el-form-item>
+            <el-button @click="creactSchool">添加更多学校</el-button>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="dialogVisible = true">预览</el-button>
@@ -156,10 +164,26 @@
 
 <script>
   export default {
+
     data() {
+      const defaultSchoolObj = {
+        "postId": null,
+        "id": null,
+        "name": null,
+        "email": null,
+        "body": null,
+      };
       return {
-        selectedSchoolId: 88,
+        scdate: '',
+        scdates: '',
+        // schoolcreat: [1],
+        defaultSchoolObj,
+        selectedSchoolObjAry: [
+          {...defaultSchoolObj},
+        ],
+        schoolObjAry: [],
         selectedEmail: 'ok@qq.com',
+        selectedSchoolId: '',
         tableData: [],
         datas: '',
         tableDatas: [],
@@ -170,7 +194,7 @@
         results: [],
         isNav: false,
         isNavs: false,
-        schoolObjAry: [],
+        schoolId: [],
         school:
           {
             LastModBy: "",
@@ -193,11 +217,19 @@
       };
     },
     methods: {
-      selectSchool(val){
-        const [selectedSchoolObj] = this.schoolObjAry.filter(item=>{
-          return item.id == val;
+      creactSchool() {
+        this.selectedSchoolObjAry.push({...this.defaultSchoolObj});
+      },
+      selectSchool(theOneId, indexInSelectedSchoolObjAry) {
+        const [selectedSchoolFormApiObj] = this.schoolObjAry.filter(item => {
+          return item.id == theOneId;
         });
-        this.selectedEmail = selectedSchoolObj.email;
+        //循环遍历匹配上的对象中的属性赋值给已被监听的对象，如果直接赋值为该对象，vue不会更新数据
+        for(let key in selectedSchoolFormApiObj){
+          if(selectedSchoolFormApiObj.hasOwnProperty(key)){
+            this.selectedSchoolObjAry[indexInSelectedSchoolObjAry][key] =  selectedSchoolFormApiObj[key];
+          }
+        }
       },
       handlenav() {
         this.isNav = !this.isNav

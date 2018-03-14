@@ -54,7 +54,7 @@
               </el-form>
             </el-popover>
             <el-button v-popover:popover4>更多条件</el-button>
-            <el-button type="info">刷新</el-button>
+            <el-button type="info" @click="winReload">刷新</el-button>
             <router-link to="/NewSurvey">
               <el-button type="success" style="margin-left: 0">新建调研</el-button>
             </router-link>
@@ -81,7 +81,7 @@
             label="调研单号"
             width="120">
             <template slot-scope="scope">
-              <el-button type="text" size="small" style="color: #606266" @click="handleDeteilsSur()">
+              <el-button type="text" size="small" style="color: #606266" @click="handleDeteilsSur(scope.row.FileCode)">
                 {{scope.row.FileCode}}
               </el-button>
             </template>
@@ -91,7 +91,7 @@
             label="调研主题"
             width="200">
             <template slot-scope="scope">
-              <el-button type="text" size="small" style="color: #606266" @click="handleDeteilsSur()">
+              <el-button type="text" size="small" style="color: #606266" @click="handleDeteilsSur(scope.row.FileCode)">
                 {{scope.row.Title }}
               </el-button>
             </template>
@@ -101,7 +101,7 @@
             label="学校名称"
             show-overflow-tooltip>
             <template slot-scope="scope">
-              <el-button type="text" size="small" style="color: #606266" @click="handleDeteilsSur()">
+              <el-button type="text" size="small" style="color: #606266" @click="handleDeteilsSur(scope.row.FileCode)">
                 {{scope.row.SchoolName}}
               </el-button>
             </template>
@@ -111,7 +111,7 @@
             label="负责人"
             width="RecId">
             <template slot-scope="scope">
-              <el-button type="text" size="small" style="color: #606266" @click="handleDeteilsSur()">
+              <el-button type="text" size="small" style="color: #606266" @click="handleDeteilsSur(scope.row.FileCode)">
                 {{scope.row.ResponsiblePeople }}
               </el-button>
             </template>
@@ -125,7 +125,7 @@
             label="调研单位"
           >
             <template slot-scope="scope">
-              <el-button type="text" size="small" style="color: #606266" @click="handleDeteilsSur()">
+              <el-button type="text" size="small" style="color: #606266" @click="handleDeteilsSur(scope.row.FileCode)">
                 {{scope.row.ResearchOrganization }}
               </el-button>
             </template>
@@ -134,7 +134,7 @@
             label="调研人"
             width="120">
             <template slot-scope="scope">
-              <el-button type="text" size="small" style="color: #606266" @click="handleDeteilsSur()">
+              <el-button type="text" size="small" style="color: #606266" @click="handleDeteilsSur(scope.row.FileCode)">
                 {{scope.row.ResearchPeople }}
               </el-button>
             </template>
@@ -206,10 +206,14 @@
         goodcode:[],
         tableData3: [],
         multipleSelection: [],
-        obd:{FileCode:1}
+        obd:{FileCode:1},
+        pras:{},
       };
     },
     methods: {
+      winReload(){
+        window.location.reload();
+      },
       handleDelete(index, row) {
         this.infoList.splice(index, 1);
         let para = this.goodcode
@@ -243,13 +247,17 @@
       handleSelectionChange(val) {
         this.multipleSelection = val;
       },
-      handleDeteilsSur() {
-        var oba = JSON.stringify(this.obd);
-        this.$axios.post("http://172.16.6.11:10080/GetResearchInfo?token=A2D4B1BD5BCD43E4BFFAD9C8BE76743C",{
+      handleDeteilsSur(ers) {
+        console.log(ers);
+        var oba = JSON.stringify(ers);
+        this.$axios.post("http://172.16.6.11:10080/GetResearchInfo?token=A2D4B1BD5BCD43E4BFFAD9C8BE76743C",
           oba
-        }).then((res) => {
-          console.log(res.data);
-          this.$router.push('/DetailsSurvey')
+            ).then((res) => {
+          //console.log(res.data,222);
+          var prasse=res.data
+
+          this.$router.push({path:'/DetailsSurvey',query: {pramadata:prasse}})
+
         }, error => {
           console.log(error);
         })
