@@ -28,9 +28,9 @@
               </el-col>
             </el-form-item>
           </el-form-item>
-          <el-form-item label="中心人员" prop="name">
+          <el-form-item label="中心人员">
             <el-input style="width: 290px;float: left" v-model="parmasid.responsiblePeople"></el-input>
-            <el-form-item label="人员电话" prop="name">
+            <el-form-item label="人员电话">
               <el-input style="width: 275px" v-model="parmasid.phoneNumber"></el-input>
             </el-form-item>
           </el-form-item>
@@ -44,7 +44,7 @@
             <el-input style="width: 275px" v-model="parmasid.responsiblePeople"></el-input>
           </el-form-item>
           <el-form-item style="float: right">
-            <img style="width: 120px;height: 120px;" src="http://qr.liantu.com/api.php?text=http://172.16.6.11:10080/GetResearchInfo?token=C0869589E15E469CA031AC09FD874234" alt="">
+            <img style="width: 120px;height: 120px;" v-bind:src="parmasid.imgSrc" alt="">
           </el-form-item>
           <el-form-item  label="调研参与人" required>
             <el-input style="width: 275px" v-model="parmasid.participants"></el-input>
@@ -100,6 +100,7 @@
       //console.log(this.$route.query.pramadata,232323);
       this.parmasid=this.$route.query.pramadata[0]
       console.log(this.parmasid,888);
+      console.log(this.parmasid.imgSrc, 999);
     }
   }
 </script>

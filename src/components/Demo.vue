@@ -97,6 +97,7 @@
               <el-form-item label="学校负责人" style="display: inline-block;margin-left: 135px">
                 <el-input :value="selectedSchoolObj.email" readonly style="width: 400px;"></el-input>
               </el-form-item>
+              <el-button @click="deleteRow(selectedSchoolObj)">删除</el-button>
             </template>
           </el-form>
           <el-form-item>
@@ -210,13 +211,16 @@
             ResponsiblePeople: [],
             Participants: [],
             Logo: "",
-            SchoolName: '',
-            Teacher: ''
+            SchoolName:[],
+            Teacher: []
           },
 
       };
     },
     methods: {
+      deleteRow(esa){
+        this.selectedSchoolObjAry.splice(esa,1)
+      },
       creactSchool() {
         this.selectedSchoolObjAry.push({...this.defaultSchoolObj});
       },
@@ -228,6 +232,12 @@
         for(let key in selectedSchoolFormApiObj){
           if(selectedSchoolFormApiObj.hasOwnProperty(key)){
             this.selectedSchoolObjAry[indexInSelectedSchoolObjAry][key] =  selectedSchoolFormApiObj[key];
+          }
+          if(this.school.SchoolName.indexOf(selectedSchoolFormApiObj.id) == -1){
+            this.school.SchoolName.push(selectedSchoolFormApiObj.id)
+          }
+          if(this.school.Teacher.indexOf(selectedSchoolFormApiObj.email) == -1){
+            this.school.Teacher.push(selectedSchoolFormApiObj.email)
           }
         }
       },
@@ -257,7 +267,7 @@
       },
       postData() {
         var obj = JSON.stringify(this.school);
-        this.$axios.post('http://172.16.6.11:10080/AddResearch?token=A2D4B1BD5BCD43E4BFFAD9C8BE76743C',
+        this.$axios.post('http://jsonplaceholder.typicode.com/posts',
           obj,
         )
           .then((res) => {
