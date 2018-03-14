@@ -97,7 +97,7 @@
               <el-form-item label="学校负责人" style="display: inline-block;margin-left: 135px">
                 <el-input :value="selectedSchoolObj.email" readonly style="width: 400px;"></el-input>
               </el-form-item>
-              <el-button @click="deleteRow(selectedSchoolObj)">删除</el-button>
+              <el-button @click="deleteRow(index)">删除</el-button>
             </template>
           </el-form>
           <el-form-item>
@@ -196,7 +196,7 @@
         isNav: false,
         isNavs: false,
         schoolId: [],
-        school:
+        school: //这是要传入JSON.stringfy方法转换成 json字符串并上传的对象
           {
             LastModBy: "",
             StartDateTime: "",
@@ -214,12 +214,13 @@
             SchoolName:[],
             Teacher: []
           },
-
       };
     },
     methods: {
-      deleteRow(esa){
-        this.selectedSchoolObjAry.splice(esa,1)
+      deleteRow(index){ //这里边的形参是selectedSchoolObjAry的要删除项的索引, 传入的实参同理
+        this.selectedSchoolObjAry.splice(index,1)
+        this.school.SchoolName.splice(index, 1);
+        this.school.Teacher.splice(index, 1);
       },
       creactSchool() {
         this.selectedSchoolObjAry.push({...this.defaultSchoolObj});
@@ -233,13 +234,9 @@
           if(selectedSchoolFormApiObj.hasOwnProperty(key)){
             this.selectedSchoolObjAry[indexInSelectedSchoolObjAry][key] =  selectedSchoolFormApiObj[key];
           }
-          if(this.school.SchoolName.indexOf(selectedSchoolFormApiObj.id) == -1){
-            this.school.SchoolName.push(selectedSchoolFormApiObj.id)
-          }
-          if(this.school.Teacher.indexOf(selectedSchoolFormApiObj.email) == -1){
-            this.school.Teacher.push(selectedSchoolFormApiObj.email)
-          }
         }
+         this.school.SchoolName.push(this.selectedSchoolObjAry[indexInSelectedSchoolObjAry].id);
+         this.school.Teacher.push(this.selectedSchoolObjAry[indexInSelectedSchoolObjAry].email);
       },
       handlenav() {
         this.isNav = !this.isNav
@@ -267,6 +264,7 @@
       },
       postData() {
         var obj = JSON.stringify(this.school);
+        console.log('postData exectued', 272, 272);
         this.$axios.post('http://jsonplaceholder.typicode.com/posts',
           obj,
         )
