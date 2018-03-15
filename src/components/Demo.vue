@@ -221,11 +221,11 @@
             deleteRow(index) { //这里边的形参是selectedSchoolObjAry的要删除项的索引, 传入的实参同理
                 this.selectedSchoolObjAry.splice(index, 1)
                 //找到符合的第一项id
-                const willDeleteIdIndex = this.school.SchoolName.findIndex((id) => id == this.selectedSchoolObjAry[selectedSchoolObjAryIndex].id);
-                this.school.SchoolName.splice(willDeleteIdIndex, 1);
-                //找到符合的第一项email
-                const willDeleteEmailIndex = this.school.Teacher.findIndex((id) => email == this.selectedSchoolObjAry[selectedSchoolObjAryIndex].email);
-                this.school.Teacher.splice(willDeleteIdIndex, 1);
+                // const willDeleteIdIndex = this.school.SchoolName.findIndex((id) => id == this.selectedSchoolObjAry[selectedSchoolObjAryIndex].id);
+                // this.school.SchoolName.splice(willDeleteIdIndex, 1);
+                // //找到符合的第一项email
+                // const willDeleteEmailIndex = this.school.Teacher.findIndex((id) => email == this.selectedSchoolObjAry[selectedSchoolObjAryIndex].email);
+                // this.school.Teacher.splice(willDeleteIdIndex, 1);
             },
             creactSchool() {
                 this.selectedSchoolObjAry.push({...this.defaultSchoolObj});
@@ -241,10 +241,8 @@
                         this.selectedSchoolObjAry[selectedSchoolObjAryIndex][key] = selectedSchoolFormApiObj[key];
                     }
                 }
-                // this.school.SchoolName.splice(selectedSchoolObjAryIndex, 1, this.selectedSchoolObjAry[selectedSchoolObjAryIndex].id);
-                this.school.SchoolName.splice(selectedSchoolObjAryIndex, 1, theOneId);
-                // this.school.Teacher.splice(selectedSchoolObjAryIndex, 1, this.selectedSchoolObjAry[selectedSchoolObjAryIndex].email);
-                this.school.Teacher.splice(selectedSchoolObjAryIndex, 1, email);
+                // this.school.SchoolName.splice(selectedSchoolObjAryIndex, 1, theOneId);
+                // this.school.Teacher.splice(selectedSchoolObjAryIndex, 1, email);
             },
             handlenav() {
                 this.isNav = !this.isNav
@@ -271,6 +269,8 @@
                 this.tables.splice(this.tables.indexOf(tags), 1)
             },
             postData() {
+                this.school.SchoolName = this.selectedSchoolObjAry.map(item=>item.id);
+                this.school.Teacher = this.selectedSchoolObjAry.map(item=>item.email);
                 var obj = JSON.stringify(this.school);
                 console.log('postData exectued', 272, 272);
                 this.$axios.post('http://jsonplaceholder.typicode.com/posts',
