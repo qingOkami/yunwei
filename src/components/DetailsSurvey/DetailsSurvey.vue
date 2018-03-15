@@ -44,7 +44,7 @@
             <el-input style="width: 275px" v-model="parmasid.responsiblePeople"></el-input>
           </el-form-item>
           <el-form-item style="float: right">
-            <img style="width: 120px;height: 120px;" v-bind:src="parmasid.imgSrc" alt="">
+            <img style="width: 120px;height: 120px;" v-bind:src="parIrc" alt="">
           </el-form-item>
           <el-form-item  label="调研参与人" required>
             <el-input style="width: 275px" v-model="parmasid.participants"></el-input>
@@ -66,9 +66,7 @@
     data() {
       return {
         parmasid:{},
-        DetailsList:[],
-        dynamicTags:["张三"],
-        dynamicTags2:["朱晓旺"],
+        parIrc:""
       }
     },
 
@@ -83,24 +81,21 @@
         window.print()
         document.body.innerHTML = oldstr
         window.location.reload()
+      },
+      getData(){
+        this.parmasid=this.$route.query.pramadata[0]
+        console.log(this.parmasid,888);
+        console.log(this.parmasid.imgSrc+""+this.parmasid.fileCode, 999);
+        this.parIrc="Http://172.16.6.11:10080/"+this.parmasid.imgSrc+""+this.parmasid.fileCode;
       }
     },
-    // created() {
-    //    this.$axios.get("http://172.16.6.11:10080/GetResearchIndex?token=A2D4B1BD5BCD43E4BFFAD9C8BE76743C").then((res) => {
-    //    // this.$axios.get("http://jsonplaceholder.typicode.com/posts?userId=1").then((res) => {
-    //     this.DetailsList = res.data;
-    //      // console.log(this.DetailsList);
-    //      // console.log(this.DetailsList.FileCode,11);
-    //      // console.log(this.DetailsList[0].FileCode,2222);
-    //   }, error => {
-    //     console.log(error);
-    //   })
-    // },
     mounted:function () {
-      //console.log(this.$route.query.pramadata,232323);
-      this.parmasid=this.$route.query.pramadata[0]
-      console.log(this.parmasid,888);
-      console.log(this.parmasid.imgSrc, 999);
+      this.getData()
+    },
+    watch:{
+      '$route'(to,form){
+        this.getData()
+      }
     }
   }
 </script>

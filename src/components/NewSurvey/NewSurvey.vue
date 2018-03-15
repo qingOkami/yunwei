@@ -96,7 +96,7 @@
               <el-form-item label="学校负责人" style="display: inline-block;margin-left: 135px">
                 <el-input :value="selectedSchoolObj.Value" readonly style="width: 400px;"></el-input>
               </el-form-item>
-              <el-button @click="deleteRow(selectedSchoolObj)">删除</el-button>
+              <el-button @click="deleteRow(index)">删除</el-button>
             </template>
 
           </el-form>
@@ -118,7 +118,7 @@
       :before-close="handleClose">
 
       <el-carousel indicator-position="none" style="height: 800px;" :autoplay=false>
-        <el-carousel-item style="height: 700px"  v-for="item in 4" :key="item">
+        <el-carousel-item style="height: 750px"  v-for="(item,indexs) in selectedSchoolObjAry" :key="indexs">
           <span><img src="../../assets/images/Title.png" alt=""></span>
           <h2 style="text-align: center">朝阳区其他公办幼儿园安防监控达标建设勘察介绍信</h2>
           <div style="padding: 0 60px">
@@ -130,7 +130,7 @@
 
             <p style="margin-top: 40px">
           <span style="font-weight:400;font-size: 16px;">
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;兹介绍 王宝磊 同志对贵单位安防监控系统进行勘察，望贵单位予以积极配合。
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;兹介绍 <child v-bind:my-message="school.ResponsiblePeople.toLocaleString()"></child> 同志对贵单位安防监控系统进行勘察，望贵单位予以积极配合。
           </span>
             </p>
             <p style="margin-top: 20px">
@@ -140,23 +140,23 @@
             </p>
             <p style="margin-top: 40px">
             <span style="font-weight:400;font-size: 16px;">
-              信息中心联系人：<child v-bind:my-message="school.CenterContact"></child>
+              信息中心联系人：<child v-bind:my-message="school.Participants.toString()"></child>
             </span>
             </p>
 
             <p>
             <span style="font-weight:400;font-size: 16px;">
-              联系电话：85979246-84044
+              联系电话：<child v-bind:my-message="school.PhoneNumber.toString()"></child>
             </span>
             </p>
             <p>
-              <img style="width: 120px;height: 120px;" src="http://qr.liantu.com/api.php?text=http://172.16.6.11:10080/GetResearchInfo?token=C0869589E15E469CA031AC09FD874234" alt="">
+              <img style="width: 120px;height: 120px;" src="../../assets/images/nobcs.jpg" alt="">
             </p>
             <div style="text-align: right">
               <p><span>北京市朝阳区现代教育信息网络中心</span></p>
               <p style="margin-right: 50px"><child v-bind:my-message="scdate"></child></p>
             </div>
-            <h3 style="text-align: center;margin-top: 30px">{{item}}</h3>
+            <h3 style="text-align: center;margin-top: 30px">{{indexs+1}}</h3>
           </div>
         </el-carousel-item>
       </el-carousel>
@@ -225,44 +225,22 @@
     methods: {
       dialogVisibles(){
         this.dialogVisible=true;
-        this.school.Logo="0";
-        var logos=this.school;
-        this.$axios.post('http://172.16.6.11:10080/AddResearch?token=A2D4B1BD5BCD43E4BFFAD9C8BE76743C',
-          logos
-        )
-          .then((res) => {
-            console.log(res.data);
-          }, error => {
-            console.log(error);
-          })
+        console.log(this.selectedSchoolObjAry,555);
       },
-      deleteRow(esa){
-        this.selectedSchoolObjAry.splice(esa,1)
-        // this.school.Teacher.splice(esa,1)
-        // this.school.splice(esa,1)
+      deleteRow(index){
+        this.selectedSchoolObjAry.splice(index,1)
       },
       creactSchool() {
-        //for(var oaa in this.defaultSchoolObj){
-
-
         this.selectedSchoolObjAry.push({...this.defaultSchoolObj});
-        //}
       },
-      selectSchool(theOneId, indexInSelectedSchoolObjAry) {
+      selectSchool(theOneId, selectedSchoolObjAryIndex) {
         const [selectedSchoolFormApiObj] = this.schoolObjAry.filter(item => {
           return item.SchoolName == theOneId;
         });
         //循环遍历匹配上的对象中的属性赋值给已被监听的对象，如果直接赋值为该对象，vue不会更新数据
         for(let key in selectedSchoolFormApiObj){
           if(selectedSchoolFormApiObj.hasOwnProperty(key)){
-            this.selectedSchoolObjAry[indexInSelectedSchoolObjAry][key] =  selectedSchoolFormApiObj[key];
-          }
-          //console.log(selectedSchoolFormApiObj.SchoolName);
-          if(this.school.SchoolName.indexOf(selectedSchoolFormApiObj.SchoolName) == -1){
-            this.school.SchoolName.push(selectedSchoolFormApiObj.SchoolName)
-          }
-          if(this.school.Teacher.indexOf(selectedSchoolFormApiObj.Value) == -1){
-            this.school.Teacher.push(selectedSchoolFormApiObj.Value)
+            this.selectedSchoolObjAry[selectedSchoolObjAryIndex][key] =  selectedSchoolFormApiObj[key];
           }
         }
       },
@@ -307,6 +285,10 @@
         this.tables.splice(this.tables.indexOf(tags), 1)
       },
       postData() {
+        this.school.SchoolName = this.selectedSchoolObjAry.map(item=>item.SchoolName);
+        console.log(this.selectedSchoolObjAry.map(item => item));
+        console.log(this.selectedSchoolObjAry.map(item => item.Teacher));
+        this.school.Teacher = this.selectedSchoolObjAry.map(item=>item.Value);
         this.school.Logo="1";
         var obj = JSON.stringify(this.school);
         this.$axios.post('http://172.16.6.11:10080/AddResearch?token=A2D4B1BD5BCD43E4BFFAD9C8BE76743C',
@@ -321,7 +303,7 @@
           .then((res) => {
             console.log(res.data);
             this.datas = res.data;
-            this.$router.push('/')
+            //this.$router.push('/')
           }, error => {
             console.log(error);
           })
@@ -346,6 +328,7 @@
       this.$axios.get('http://172.16.6.11:10080/GetUserList?token=A2D4B1BD5BCD43E4BFFAD9C8BE76743C').then((res) => {
         this.tableData = res.data;
         this.tableDatas = res.data;
+        console.log(res.data,222);
         var d = new Date();
         var date = d.getFullYear()+"年"+(d.getMonth()+1)+"月"+d.getDate()+"日"
         this.scdate=date

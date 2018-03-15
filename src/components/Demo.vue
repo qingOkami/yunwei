@@ -86,7 +86,8 @@
           <el-form v-for="(selectedSchoolObj, index) in selectedSchoolObjAry" :key="index">
             <template slot-scope="scope">
               <el-form-item label="学校名称" style="display: inline-block">
-                <el-select @change="selectSchool(selectedSchoolObj.id, index)" v-model="selectedSchoolObj.id"
+                <el-select @change="selectSchool(selectedSchoolObj.id, index)"
+                           v-model="selectedSchoolObj.id"
                            value-key="UnitId"
                            placeholder="请选择学校" style="width: 400px">
                   <el-option v-for="(selectedSchoolFromApiObj, i) in schoolObjAry" :key="i"
@@ -97,7 +98,7 @@
               <el-form-item label="学校负责人" style="display: inline-block;margin-left: 135px">
                 <el-input :value="selectedSchoolObj.email" readonly style="width: 400px;"></el-input>
               </el-form-item>
-              <el-button @click="deleteRow(selectedSchoolObj)">删除</el-button>
+              <el-button @click="deleteRow(index)">删除</el-button>
             </template>
           </el-form>
           <el-form-item>
@@ -165,7 +166,6 @@
 
 <script>
   export default {
-
     data() {
       const defaultSchoolObj = {
         "postId": null,
@@ -196,7 +196,7 @@
         isNav: false,
         isNavs: false,
         schoolId: [],
-        school:
+        school: //这是要传入JSON.stringfy方法转换成 json字符串并上传的对象
           {
             LastModBy: "",
             StartDateTime: "",
@@ -211,35 +211,31 @@
             ResponsiblePeople: [],
             Participants: [],
             Logo: "",
-            SchoolName:[],
+            SchoolName: [],
             Teacher: []
           },
-
       };
     },
     methods: {
-      deleteRow(esa){
-        this.selectedSchoolObjAry.splice(esa,1)
+      deleteRow(index) { //这里边的形参是selectedSchoolObjAry的要删除项的索引, 传入的实参同理
+        this.selectedSchoolObjAry.splice(index, 1)
       },
       creactSchool() {
         this.selectedSchoolObjAry.push({...this.defaultSchoolObj});
       },
-      selectSchool(theOneId, indexInSelectedSchoolObjAry) {
+      selectSchool(theOneId, selectedSchoolObjAryIndex) {
         const [selectedSchoolFormApiObj] = this.schoolObjAry.filter(item => {
           return item.id == theOneId;
         });
+        const email = selectedSchoolFormApiObj.email;
         //循环遍历匹配上的对象中的属性赋值给已被监听的对象，如果直接赋值为该对象，vue不会更新数据
-        for(let key in selectedSchoolFormApiObj){
-          if(selectedSchoolFormApiObj.hasOwnProperty(key)){
-            this.selectedSchoolObjAry[indexInSelectedSchoolObjAry][key] =  selectedSchoolFormApiObj[key];
-          }
-          if(this.school.SchoolName.indexOf(selectedSchoolFormApiObj.id) == -1){
-            this.school.SchoolName.push(selectedSchoolFormApiObj.id)
-          }
-          if(this.school.Teacher.indexOf(selectedSchoolFormApiObj.email) == -1){
-            this.school.Teacher.push(selectedSchoolFormApiObj.email)
+        for (let key in selectedSchoolFormApiObj) {
+          if (selectedSchoolFormApiObj.hasOwnProperty(key)) {
+            this.selectedSchoolObjAry[selectedSchoolObjAryIndex][key] = selectedSchoolFormApiObj[key];
           }
         }
+        // this.school.SchoolName.splice(selectedSchoolObjAryIndex, 1, theOneId);
+        // this.school.Teacher.splice(selectedSchoolObjAryIndex, 1, email);
       },
       handlenav() {
         this.isNav = !this.isNav
@@ -250,23 +246,26 @@
       handlePeople(row) {
         this.dynamicTags.push(row.UserName);
         this.isNav = !this.isNav
-        this.school.ResponsiblePeople=this.dynamicTags;
+        this.school.ResponsiblePeople = this.dynamicTags;
       },
       handlePeople2(row) {
         this.tables.push(row.UserName)
         this.isNavs = !this.isNavs
         console.log(this.tables);
-        this.school.Participants=this.tables
+        this.school.Participants = this.tables
       },
       handleClose1(tag) {
         this.dynamicTags.splice(this.dynamicTags.indexOf(tag), 1)
-        this.school.ResponsiblePeople=this.dynamicTags;
+        this.school.ResponsiblePeople = this.dynamicTags;
       },
       handleClose2(tags) {
         this.tables.splice(this.tables.indexOf(tags), 1)
       },
       postData() {
+        this.school.SchoolName = this.selectedSchoolObjAry.map(item=>item.id);
+        this.school.Teacher = this.selectedSchoolObjAry.map(item=>item.email);
         var obj = JSON.stringify(this.school);
+        console.log('postData exectued', 272, 272);
         this.$axios.post('http://jsonplaceholder.typicode.com/posts',
           obj,
         )
@@ -292,7 +291,7 @@
           });
       }
     },
-    mounted() {
+    beforeCreate() {
       this.$axios.get('http://172.16.6.11:10080/GetUserList?token=A2D4B1BD5BCD43E4BFFAD9C8BE76743C').then((res) => {
         this.tableData = res.data;
         this.tableDatas = res.data;
@@ -306,7 +305,6 @@
         console.log(error);
       })
     },
-
   }
 </script>
 

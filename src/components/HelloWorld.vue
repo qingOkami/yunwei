@@ -9,7 +9,7 @@
           <span>我的代办(<span style="color:darkturquoise">11</span>)</span>
         </div>
         <div>
-          <el-button style="margin:10px 0 0 15px" @click="handleDelete">批量删除</el-button>
+          <el-button style="margin:10px 0 0 15px" @click="handleDeleteAll()">批量删除</el-button>
           <div style="float: right">
 
             <el-autocomplete
@@ -66,7 +66,6 @@
       <el-main>
 
         <el-table
-
           :data="infoList"
           border
           tooltip-effect="dark"
@@ -75,6 +74,7 @@
 
           <el-table-column
             type="selection"
+            selection-change
             width="55">
           </el-table-column>
           <el-table-column
@@ -112,7 +112,7 @@
             width="RecId">
             <template slot-scope="scope">
               <el-button type="text" size="small" style="color: #606266" @click="handleDeteilsSur(scope.row.FileCode)">
-                {{scope.row.ResponsiblePeople }}
+                {{scope.row.ResponsiblePeople.toString() }}
               </el-button>
             </template>
           </el-table-column>
@@ -135,7 +135,7 @@
             width="120">
             <template slot-scope="scope">
               <el-button type="text" size="small" style="color: #606266" @click="handleDeteilsSur(scope.row.FileCode)">
-                {{scope.row.ResearchPeople }}
+                {{scope.row.ResearchPeople.toString() }}
               </el-button>
             </template>
           </el-table-column>
@@ -203,21 +203,45 @@
         DataList: [],
         results: [],
         groupedInfoAryAry: [],
-        goodcode:[],
         tableData3: [],
         multipleSelection: [],
         obd:{FileCode:1},
         pras:{},
+        Deleterow:[],
+        deleall:[]
       };
     },
     methods: {
       winReload(){
         window.location.reload();
       },
+      handleDeleteAll(){
+        this.Deleterow=this.multipleSelection;
+        let DAll=this.Deleterow
+
+        for(var as in this.Deleterow){
+          this.deleall.push(DAll[as].RecId)
+        }
+        let DeletAs=JSON.stringify(this.deleall);
+        console.log(DeletAs,110);
+        this.$axios.post("http://172.16.6.11:10080/BatchDeleteResearch?token=A2D4B1BD5BCD43E4BFFAD9C8BE76743C",DeletAs).then((res) => {
+          window.location.reload();
+        }, error => {
+          console.log(error);
+        })
+        this.$message({
+          message: "操作成功！",
+          type: 'success'
+        });
+      },
       handleDelete(index, row) {
         this.infoList.splice(index, 1);
-        let para = this.goodcode
-        var objet=JSON.stringify(para);
+        console.log(index,123);
+        console.log(row,321);
+        this.Deleterow.push(row)
+        let para = this.Deleterow;
+        let objet=JSON.stringify(para.RecId);
+        console.log(objet,44);
         this.$axios.post("http://172.16.6.11:10080/BatchDeleteResearch?token=A2D4B1BD5BCD43E4BFFAD9C8BE76743C",objet).then((res) => {
 
         }, error => {
@@ -244,14 +268,14 @@
       handleSelect(item) {
         console.log(item);
       },
-      handleSelectionChange(val) {
+      handleSelectionChange(val,index) {
         this.multipleSelection = val;
       },
       handleDeteilsSur(ers) {
-        console.log(ers);
-        var oba = JSON.stringify(ers);
-        this.$axios.post("http://172.16.6.11:10080/GetResearchInfo?token=A2D4B1BD5BCD43E4BFFAD9C8BE76743C",
-          oba
+        console.log(ers,2222);
+        //var oba = JSON.stringify(ers);
+        this.$axios.get("http://172.16.6.11:10080/GetResearchInfo?FileCode="+ers,
+          //oba
             ).then((res) => {
           //console.log(res.data,222);
           var prasse=res.data
