@@ -13,41 +13,41 @@
             <el-input type="textarea" :rows="6" v-model="parmasid.content"></el-input>
           </el-form-item>
           <el-form-item label="项目名称">
-            <el-select disabled placeholder="安防监控系统" style="width: 100%">
+            <el-select disabled placeholder="安防监控系统" class="DataWidth">
               <el-option label="安防监控系统" value="shanghai"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="开始时间">
             <el-col :span="5">
-              <el-date-picker type="date" v-model="parmasid.startDateTime" placeholder="选择日期" style="width: 100%;"></el-date-picker>
+              <el-date-picker type="date" v-model="parmasid.startDateTime" placeholder="选择日期" class="DataWidth"></el-date-picker>
             </el-col>
             <el-form-item label="结束时间">
               <el-col :span="5">
                 <el-date-picker type="date" placeholder="选择日期" v-model="parmasid.endDateTime"
-                                style="width: 100%;"></el-date-picker>
+                                class="DataWidth"></el-date-picker>
               </el-col>
             </el-form-item>
           </el-form-item>
           <el-form-item label="中心人员">
-            <el-input style="width: 290px;float: left" v-model="parmasid.responsiblePeople"></el-input>
+            <el-input class="DataWidLeft" v-model="parmasid.responsiblePeople"></el-input>
             <el-form-item label="人员电话">
-              <el-input style="width: 275px" v-model="parmasid.phoneNumber"></el-input>
+              <el-input class="phoneNumber" v-model="parmasid.phoneNumber"></el-input>
             </el-form-item>
           </el-form-item>
 
           <el-form-item label="调研单位">
-            <el-select disabled placeholder="安防监控系统" style="width: 100%">
+            <el-select disabled placeholder="安防监控系统" class="DataWidth">
               <el-option label="安防监控系统" value="shanghai"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item  label="调研负责人" required>
-            <el-input style="width: 275px" v-model="parmasid.responsiblePeople"></el-input>
+            <el-input class="PeopleWidth" v-model="parmasid.responsiblePeople"></el-input>
           </el-form-item>
           <el-form-item style="float: right">
             <img style="width: 120px;height: 120px;" v-bind:src="parIrc" alt="">
           </el-form-item>
           <el-form-item  label="调研参与人" required>
-            <el-input style="width: 275px" v-model="parmasid.participants"></el-input>
+            <el-input class="PeopleWidth" v-model="parmasid.participants"></el-input>
           </el-form-item>
         </el-form>
 
@@ -76,11 +76,11 @@
       },
       doPrint(){
         var newstr = document.getElementsByClassName('printOrder-data')[0].innerHTML
-        document.body.innerHTML = newstr
-        var oldstr = document.body.innerHTML
+        //document.body.innerHTML = newstr
+       // var oldstr = document.body.innerHTML
         window.print()
-        document.body.innerHTML = oldstr
-        window.location.reload()
+        //document.body.innerHTML = oldstr
+        //window.location.reload()
       },
       getData(){
         this.parmasid=this.$route.query.pramadata[0]
@@ -91,6 +91,7 @@
     },
     mounted:function () {
       this.getData()
+      this.setData()
     },
     watch:{
       '$route'(to,form){
@@ -101,5 +102,16 @@
 </script>
 
 <style scoped>
-
+  .DataWidth{
+    width: 100%
+  }
+  .DataWidLeft{
+    width: 287px;float: left
+  }
+  .phoneNumber{
+    width: 265px
+  }
+  .PeopleWidth{
+    width: 275px
+  }
 </style>

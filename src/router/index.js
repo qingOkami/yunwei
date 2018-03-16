@@ -4,6 +4,7 @@ import HelloWorld from '@/components/HelloWorld'
 import Demo from '@/components/Demo'
 import NewSurvey from '@/components/NewSurvey/NewSurvey'
 import DetailsSurvey from '@/components/DetailsSurvey/DetailsSurvey'
+import edit from '@/components/Edit/edit'
 // import Demo from '@/components/Demo'
 Vue.use(Router)
 
@@ -23,6 +24,11 @@ export default new Router({
       path: '/DetailsSurvey',
       name: 'DetailsSurvey',
       component: DetailsSurvey,
+
+    },{
+      path: '/Edit',
+      name: 'edit',
+      component: edit,
 
     },
     {

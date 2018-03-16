@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-tabs type="border-card">
+    <el-tabs>
       <el-tab-pane label="新建调研">
         <el-form :model="school" ref="school" label-width="100px" class="demo-ruleForm">
           <el-form-item label="调研主题" prop="" required>
@@ -12,36 +12,36 @@
           </el-form-item>
 
           <el-form-item label="项目名称" required>
-            <el-select v-model="school.ProjectName" placeholder="请选择" style="width: 1369px;">
-              <el-option label="安防监控系统" value="shanghai"></el-option>
+            <el-select v-model="school.ProjectName" placeholder="请选择项目单位" style="width: 1369px;">
+              <el-option v-for="(jobs,lis) in jobNav" :key="lis" :label="jobs.projectName" v-model="jobs.projectName" value=""></el-option>
             </el-select>
           </el-form-item>
 
-          <el-form-item label="开始时间" required style="display: inline-block">
+          <el-form-item label="开始时间" required class="DataInline">
             <el-col :span="11">
               <el-form-item prop="">
                 <el-date-picker type="datetime" placeholder="选择日期" v-model="school.StartDateTime"
-                                @change="logTimeChange"             style="width: 565px;"></el-date-picker>
+                                @change="logTimeChange" class="DataPickw"></el-date-picker>
               </el-form-item>
             </el-col>
           </el-form-item>
-          <el-form-item label="截止时间" @change="endTimeChange" required style="display: inline-block;margin-left: 135px">
+          <el-form-item label="截止时间" @change="endTimeChange" class="DataInleft" required>
             <el-col :span="11">
               <el-form-item>
                 <el-date-picker type="datetime" placeholder="选择日期" v-model="school.EndDateTime"
-                                style="width: 565px;"></el-date-picker>
+                                class="DataPickw"></el-date-picker>
               </el-form-item>
             </el-col>
           </el-form-item>
-          <el-form-item label="中心联系人" required style="display: inline-block">
-            <el-input v-model="school.CenterContact" style="width: 565px;"></el-input>
+          <el-form-item label="中心联系人" required class="DataInline">
+            <el-input v-model="school.CenterContact" class="DataPickw"></el-input>
           </el-form-item>
-          <el-form-item label="联系电话" required style="display: inline-block;margin-left: 135px">
-            <el-input v-model="school.PhoneNumber" style="width: 565px;"></el-input>
+          <el-form-item label="联系电话" required class="DataInleft">
+            <el-input v-model="school.PhoneNumber" class="DataPickw"></el-input>
           </el-form-item>
           <el-form-item label="调研单位" required>
-            <el-select v-model="school.ResearchOrganization" placeholder="请选择调研单位" style="width: 565px;">
-              <el-option label="北京思维实创科技股份有限公司" value=""></el-option>
+            <el-select v-model="school.ResearchOrganization" placeholder="请选择" class="DataPickw">
+              <el-option label="安防监控系统" value="shanghai"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="调研负责人" required>
@@ -55,7 +55,7 @@
             </el-tag>
             <el-button type="text" @click="handlenav">请选择调研负责人</el-button>
             <el-table @row-click="handlePeople" row-key="`id`" :data="tableData"
-                      style="width:700px;height:500px;border:1px solid #efefef;position: fixed;top:100px;left: 30%;overflow-y:scroll;z-index: 9999;"
+                      class="DataTable"
                       v-show="isNav">
               <el-table-column prop="UserName" label="用户名" width="180"/>
               <el-table-column prop="GroupName" label="组织机构" width="300"/>
@@ -74,7 +74,7 @@
             </el-tag>
             <el-button type="text" @click="handlenavss">请选择调研参与人</el-button>
             <el-table @row-click="handlePeople2" row-key="`name`" :data="tableDatas"
-                      style="width:700px;height:500px;border:1px solid #efefef;position: fixed;top:100px;left: 30%;overflow-y:scroll;z-index: 9999;"
+                      class="DataTable"
                       v-show="isNavs">
               <el-table-column prop="UserName" label="用户名" width="180"/>
               <el-table-column prop="GroupName" label="组织机构" width="300"/>
@@ -84,17 +84,17 @@
 
           <el-form v-for="(selectedSchoolObj, index) in selectedSchoolObjAry" :key="index">
             <template slot-scope="scope">
-              <el-form-item label="学校名称" style="display: inline-block">
+              <el-form-item label="学校名称" class="DataInline">
                 <el-select @change="selectSchool(selectedSchoolObj.SchoolName, index)" v-model="selectedSchoolObj.SchoolName"
                            value-key="UnitId"
-                           placeholder="请选择学校" style="width: 400px">
+                           placeholder="请选择学校" class="DataOption">
                   <el-option v-for="(selectedSchoolFromApiObj, i) in schoolObjAry" :key="i"
                              :label="selectedSchoolFromApiObj.SchoolName"
                              v-model="selectedSchoolFromApiObj.SchoolName"></el-option>
                 </el-select>
               </el-form-item>
-              <el-form-item label="学校负责人" style="display: inline-block;margin-left: 135px">
-                <el-input :value="selectedSchoolObj.Value" readonly style="width: 400px;"></el-input>
+              <el-form-item label="学校负责人" class="DataInleft">
+                <el-input :value="selectedSchoolObj.Value" readonly class="DataOption"></el-input>
               </el-form-item>
               <el-button @click="deleteRow(index)">删除</el-button>
             </template>
@@ -104,12 +104,14 @@
             <el-button @click="creactSchool">添加更多学校</el-button>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="dialogVisibles">预览</el-button>
-            <el-button type="primary" @click="postData">保存</el-button>
-            <el-button @click="resetForm">返回</el-button>
+
           </el-form-item>
         </el-form>
       </el-tab-pane>
+        <el-button type="primary" @click="dialogVisibles">预览</el-button>
+        <el-button type="primary" @click="postData">保存</el-button>
+        <el-button @click="resetForm">返回</el-button>
+
     </el-tabs>
     <el-dialog
       title="预览"
@@ -117,46 +119,46 @@
       width="60%"
       :before-close="handleClose">
 
-      <el-carousel indicator-position="none" style="height: 800px;" :autoplay=false>
-        <el-carousel-item style="height: 750px"  v-for="(item,indexs) in selectedSchoolObjAry" :key="indexs">
+      <el-carousel indicator-position="none" class="DataCarouse" :autoplay=false>
+        <el-carousel-item class="DataCarouseitem"  v-for="(item,indexs) in selectedSchoolObjAry" :key="indexs">
           <span><img src="../../assets/images/Title.png" alt=""></span>
-          <h2 style="text-align: center">朝阳区其他公办幼儿园安防监控达标建设勘察介绍信</h2>
-          <div style="padding: 0 60px">
-            <p style="margin-top: 35px" id="kk">
-            <span style="font-weight:400;font-size: 16px;">
+          <h2 class="DataCarouseh">朝阳区其他公办幼儿园安防监控达标建设勘察介绍信</h2>
+          <div class="DataCarousebox">
+            <p class="CarouseBoxP">
+            <span class="CarouseBoxspan">
               &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;根据朝阳区教育委员会安排，依据《关于加强本市中小学幼儿园安全工作的意见》（京教勤[2010]8号）文件精神，进一步提高个教育单位安全防范能力，了解幼儿园现有安防监控系统现状。
           </span>
             </p>
 
-            <p style="margin-top: 40px">
-          <span style="font-weight:400;font-size: 16px;">
+            <p class="CarouseBoxTwo">
+          <span class="CarouseFont">
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;兹介绍 <child v-bind:my-message="school.ResponsiblePeople.toLocaleString()"></child> 同志对贵单位安防监控系统进行勘察，望贵单位予以积极配合。
           </span>
             </p>
-            <p style="margin-top: 20px">
-  <span style="font-weight:400;font-size: 16px;">
+            <p class="CarouseBoxTwo">
+  <span class="CarouseFont">
     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本次现场调研时间：<child v-bind:my-message="scdates"></child>至<child v-bind:my-message="scdate"></child>，在此期间，如有调研人员前来与贵单位联系，请贵单位予以接洽。
   </span>
             </p>
-            <p style="margin-top: 40px">
-            <span style="font-weight:400;font-size: 16px;">
+            <p class="CarouseBoxTwo">
+            <span class="CarouseFont">
               信息中心联系人：<child v-bind:my-message="school.Participants.toString()"></child>
             </span>
             </p>
 
             <p>
-            <span style="font-weight:400;font-size: 16px;">
+            <span class="CarouseFont">
               联系电话：<child v-bind:my-message="school.PhoneNumber.toString()"></child>
             </span>
             </p>
             <p>
-              <img style="width: 120px;height: 120px;" src="../../assets/images/nobcs.jpg" alt="">
+              <img class="CarouseImg" src="../../assets/images/nobcs.jpg" alt="">
             </p>
-            <div style="text-align: right">
+            <div class="CarouseRig">
               <p><span>北京市朝阳区现代教育信息网络中心</span></p>
-              <p style="margin-right: 50px"><child v-bind:my-message="scdate"></child></p>
+              <p class="CarousePmar"><child v-bind:my-message="scdate"></child></p>
             </div>
-            <h3 style="text-align: center;margin-top: 30px">{{indexs+1}}</h3>
+            <h3 class="CarousePage">{{indexs+1}}</h3>
           </div>
         </el-carousel-item>
       </el-carousel>
@@ -194,6 +196,7 @@
         isNav: false,
         isNavs: false,
         schoolId: [],
+        jobNav:[],
         school:
           {
             LastModBy: "",
@@ -212,8 +215,6 @@
             SchoolName:[],
             Teacher: []
           },
-        sas:[]
-
       };
     },
     components:{
@@ -291,7 +292,7 @@
         this.school.Teacher = this.selectedSchoolObjAry.map(item=>item.Value);
         this.school.Logo="1";
         var obj = JSON.stringify(this.school);
-        this.$axios.post('http://172.16.6.11:10080/AddResearch?token=A2D4B1BD5BCD43E4BFFAD9C8BE76743C',
+        this.$axios.post('http://'+window.location.host+'/AddResearch?token='+localStorage.getItem("token"),
           obj
           //{headers:{
               // "Access-Control-Allow-Origin" : "*",
@@ -303,7 +304,7 @@
           .then((res) => {
             console.log(res.data);
             this.datas = res.data;
-            //this.$router.push('/')
+            this.$router.push('/')
           }, error => {
             console.log(error);
           })
@@ -325,7 +326,7 @@
 
     },
     mounted() {
-      this.$axios.get('http://172.16.6.11:10080/GetUserList?token=A2D4B1BD5BCD43E4BFFAD9C8BE76743C').then((res) => {
+      this.$axios.get('http://'+window.location.host+'/GetUserList?token='+localStorage.getItem("token")).then((res) => {
         this.tableData = res.data;
         this.tableDatas = res.data;
         console.log(res.data,222);
@@ -335,12 +336,18 @@
       }, error => {
         console.log(error);
       });
-      this.$axios.get('http://172.16.6.11:10080/GetUnitList?token=A2D4B1BD5BCD43E4BFFAD9C8BE76743C').then((res) => {
+      this.$axios.get('http://'+window.location.host+'/GetUnitList?token='+localStorage.getItem("token")).then((res) => {
         this.schoolObjAry = res.data;
-        console.log(res.data);
+        console.log(res.data,989);
       }, error => {
         console.log(error);
-      })
+      });
+      this.$axios.get('http://'+window.location.host+'/GetProjectInfo?token='+localStorage.getItem("token")).then((res) => {
+        this.jobNav=res.data
+        console.log(res.data,28790);
+      }, error => {
+        console.log(error);
+      });
     },
 
   }
@@ -354,5 +361,57 @@
     line-height: 100px;
     margin: 0;
     text-align: center;
+  }
+  .DataInline{
+    display: inline-block;
+  }
+  .DataInleft{
+    display: inline-block;
+    margin-left: 135px
+  }
+  .DataPickw{
+    width: 565px;
+  }
+  .DataTable{
+    width:700px;height:500px;border:1px solid #efefef;position: fixed;top:100px;left: 30%;overflow-y:scroll;z-index: 9999;
+  }
+  .DataOption{
+    width: 400px
+  }
+  .DataCarouse{
+    height: 800px;
+  }
+  .DataCarouseitem{
+    height: 750px
+  }
+  .DataCarouseh{
+    text-align: center
+  }
+  .DataCarousebox{
+    padding: 0 60px
+  }
+  .CarouseBoxP{
+    margin-top: 35px
+  }
+  .CarouseBoxspan{
+    font-weight:400;font-size: 16px;
+  }
+  .CarouseBoxTwo{
+    margin-top: 20px
+  }
+  .CarouseFont{
+    font-weight:400;font-size: 16px;
+  }
+  .CarouseImg{
+    width: 120px;height: 120px;
+  }
+  .CarouseRig{
+    text-align: right
+  }
+  .CarousePmar{
+    margin-right: 50px
+  }
+  .CarousePage{
+    text-align: center;margin-top: 30px
   }
 </style>

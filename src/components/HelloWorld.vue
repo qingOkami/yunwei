@@ -6,17 +6,18 @@
           <span
             style="width:4px;height:16px;background:#8eddf2;display:inline-block;margin-right:10px;margin-left:16px;"></span>
           <span style="color: #333">投诉管理</span>
-          <span>我的代办(<span style="color:darkturquoise">11</span>)</span>
+          <span>(待办<span style="color:#ccc"> 0 </span>)</span>
         </div>
         <div>
-          <el-button style="margin:10px 0 0 15px" @click="handleDeleteAll()">批量删除</el-button>
+          <button style="border:1px solid #ccc;width:82px;height:34px;line-height:34px;text-align:center;margin:10px 0 0 15px;cursor:pointer;" @click="handleDeleteAll()">批量删除</button>
           <div style="float: right">
 
             <el-autocomplete
               v-model="state4"
               :fetch-suggestions="querySearchAsync"
-              placeholder="请输入内容"
+              placeholder="搜索"
               @select="handleSelect"
+              style="width: 250px"
             ></el-autocomplete>
 
             <el-popover ref="popover4"
@@ -53,10 +54,10 @@
                 </el-form-item>
               </el-form>
             </el-popover>
-            <el-button v-popover:popover4>更多条件</el-button>
-            <el-button type="info" @click="winReload">刷新</el-button>
+            <el-button style="margin-right: -7px; background: rgb(170, 192, 174);" v-popover:popover4>更多条件</el-button>
+            <el-button style="background: #ccc;border: none;color: #000" type="info" @click="winReload">刷新</el-button>
             <router-link to="/NewSurvey">
-              <el-button type="success" style="margin-left: 0">新建调研</el-button>
+              <el-button type="success" style="margin-left: 0;background-color:rgb(92, 184, 92)">新建调研</el-button>
             </router-link>
           </div>
         </div>
@@ -69,7 +70,7 @@
           :data="infoList"
           border
           tooltip-effect="dark"
-          style="width: 100%"
+          style="width: 100%;"
           @selection-change="handleSelectionChange">
 
           <el-table-column
@@ -81,7 +82,7 @@
             label="调研单号"
             width="120">
             <template slot-scope="scope">
-              <el-button type="text" size="small" style="color: #606266" @click="handleDeteilsSur(scope.row.FileCode)">
+              <el-button type="text" size="small" style="color: #000;font-weight: bold" @click="handleDeteilsSur(scope.row.FileCode)">
                 {{scope.row.FileCode}}
               </el-button>
             </template>
@@ -91,7 +92,7 @@
             label="调研主题"
             width="200">
             <template slot-scope="scope">
-              <el-button type="text" size="small" style="color: #606266" @click="handleDeteilsSur(scope.row.FileCode)">
+              <el-button type="text" size="small" style="color: #000;font-weight: bold" @click="handleDeteilsSur(scope.row.FileCode)">
                 {{scope.row.Title }}
               </el-button>
             </template>
@@ -101,7 +102,7 @@
             label="学校名称"
             show-overflow-tooltip>
             <template slot-scope="scope">
-              <el-button type="text" size="small" style="color: #606266" @click="handleDeteilsSur(scope.row.FileCode)">
+              <el-button type="text" size="small" style="color: #000;font-weight: bold" @click="handleDeteilsSur(scope.row.FileCode)">
                 {{scope.row.SchoolName}}
               </el-button>
             </template>
@@ -111,7 +112,7 @@
             label="负责人"
             width="RecId">
             <template slot-scope="scope">
-              <el-button type="text" size="small" style="color: #606266" @click="handleDeteilsSur(scope.row.FileCode)">
+              <el-button type="text" size="small" style="color: #000;font-weight: bold" @click="handleDeteilsSur(scope.row.FileCode)">
                 {{scope.row.ResponsiblePeople.toString() }}
               </el-button>
             </template>
@@ -125,7 +126,7 @@
             label="调研单位"
           >
             <template slot-scope="scope">
-              <el-button type="text" size="small" style="color: #606266" @click="handleDeteilsSur(scope.row.FileCode)">
+              <el-button type="text" size="small" style="color: #000;font-weight: bold" @click="handleDeteilsSur(scope.row.FileCode)">
                 {{scope.row.ResearchOrganization }}
               </el-button>
             </template>
@@ -134,7 +135,7 @@
             label="调研人"
             width="120">
             <template slot-scope="scope">
-              <el-button type="text" size="small" style="color: #606266" @click="handleDeteilsSur(scope.row.FileCode)">
+              <el-button type="text" size="small" style="color: #000;font-weight: bold" @click="handleDeteilsSur(scope.row.FileCode)">
                 {{scope.row.ResearchPeople.toString() }}
               </el-button>
             </template>
@@ -143,16 +144,34 @@
             prop="Title"
             label="状态"
             width="120">
+            <template slot-scope="scope">
+              <el-button type="text" size="small" style="color: #000;font-weight: bold" @click="handleDeteilsSur(scope.row.FileCode)">
+                {{scope.row.Status==1?'正常':'逾期' }}
+              </el-button>
+            </template>
           </el-table-column>
           <el-table-column
             label="操作"
-            width="80">
+            width="200">
             <template slot-scope="scope">
+              <el-button
+                size="mini"
+                style="border: 0"
+                @click="handleUpdata(scope.$index, scope.row)">
+                <img src="../assets/icon/dfp.png" alt="">
+              </el-button>
               <el-button
                 size="mini"
                 style="border: 0"
                 @click="handleDelete(scope.$index, scope.row)">
                 <img src="../assets/icon/user.png" alt="">
+              </el-button>
+              <el-button
+                size="mini"
+                style="border: 0"
+                @click="handleClose(scope.$index, scope.row)"
+               >
+                <img src="../assets/icon/dgb_03.png" alt="">
               </el-button>
             </template>
           </el-table-column>
@@ -178,12 +197,6 @@
   export default {
     data() {
       return {
-        ruleForm:{
-          region:""
-        },
-        addform:{
-          name:''
-        },
         schooltitle:[],
         schoolpeo:[],
         total: 0,
@@ -192,7 +205,7 @@
         infoList: [],
         willFilterInfoList: [],
         // movieInfoList: [],
-        pageSize: 3,
+        pageSize: 10,
         restaurants: [],
         state4: '',
         state5:'',
@@ -208,17 +221,40 @@
         obd:{FileCode:1},
         pras:{},
         Deleterow:[],
-        deleall:[]
+        deleall:[],
+        updata:[],
+        dataStatus:''
       };
     },
     methods: {
+      handleClose(index,row){
+        console.log(row,5454);
+
+        this.$axios.get("http://172.16.6.11:10080/UpdataStatus?token=9DE715AA1FFC401F8212E3DEE6061838&FileCode="+row.FileCode+"&Status="+row.Status).then((res) => {
+
+        }, error => {
+          console.log(error);
+        });
+      },
+      handleUpdata(index,row){
+        this.updata =row;
+        let clr=JSON.stringify(this.updata);
+        console.log(row.FileCode,57832);
+        //this.$axios.post("http://172.16.6.11:10080/UpdateResearchInfo?token=9DE715AA1FFC401F8212E3DEE6061838",clr).then((res) => {
+        this.$axios.get("http://172.16.6.11:10080/GetResearchInfo?FileCode="+row.FileCode).then((res) => {
+          var prasse=res.data
+
+          this.$router.push({path:'/Edit',query: {pramadata:prasse}})
+        }, error => {
+          console.log(error);
+        });
+      },
       winReload(){
         window.location.reload();
       },
       handleDeleteAll(){
         this.Deleterow=this.multipleSelection;
         let DAll=this.Deleterow
-
         for(var as in this.Deleterow){
           this.deleall.push(DAll[as].RecId)
         }
@@ -275,9 +311,9 @@
         console.log(ers,2222);
         //var oba = JSON.stringify(ers);
         this.$axios.get("http://172.16.6.11:10080/GetResearchInfo?FileCode="+ers,
-          //oba
             ).then((res) => {
           //console.log(res.data,222);
+
           var prasse=res.data
 
           this.$router.push({path:'/DetailsSurvey',query: {pramadata:prasse}})
@@ -379,8 +415,8 @@
     // }
   };
 </script>
-<style scoped>
-  .step04 {
-    background: url("../assets/icon/user.png") no-repeat
-  }
+<style>
+  .el-table th{
+    background: rgb(216, 225, 229);
+}
 </style>
