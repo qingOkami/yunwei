@@ -24,11 +24,11 @@
           <!--</el-form-item>-->
           <el-form-item label="开始时间">
             <el-col :span="5">
-              <el-date-picker type="date" v-model="parmasid.startDateTime" placeholder="选择日期" class="DataWidth"></el-date-picker>
+              <el-date-picker type="datetime" v-model="parmasid.startDateTime" placeholder="选择日期" class="DataWidth"></el-date-picker>
             </el-col>
             <el-form-item label="结束时间">
               <el-col :span="5">
-                <el-date-picker type="date" placeholder="选择日期" v-model="parmasid.endDateTime"
+                <el-date-picker type="datetime" placeholder="选择日期" v-model="parmasid.endDateTime"
                                 class="DataWidth"></el-date-picker>
               </el-col>
             </el-form-item>
@@ -40,8 +40,8 @@
             </el-form-item>
           </el-form-item>
           <el-form-item label="调研单位" required>
-            <el-select v-model="parmasid.ResearchOrganization" placeholder="请选择" class="DataPickw">
-              <el-option label="安防监控系统" value="shanghai"></el-option>
+            <el-select v-model="parmasid.researchOrganization" placeholder="请选择" class="DataPickw">
+              <el-option label="安防监控系统" value="安防监控系统"></el-option>
             </el-select>
           </el-form-item>
           <!--<el-form-item label="调研单位">-->
@@ -166,9 +166,12 @@
       },
       Preservation(){
         let dataform=this.parmasid;
+        this.parmasid.startDateTime=this.parmasid.startDateTime.replace(".0","")
+        this.parmasid.endDateTime=this.parmasid.endDateTime.replace(".0","")
         console.log(dataform,8689);
         let dataok=JSON.stringify(dataform);
-        this.$axios.post("http://172.16.6.11:10080/updateResearchInfo?token=9DE715AA1FFC401F8212E3DEE6061838",dataok).then((res) => {
+
+        this.$axios.post("http://172.16.6.11:10080/UpdateResearchInfo?token=9DE715AA1FFC401F8212E3DEE6061838",dataok).then((res) => {
 
         }, error => {
           console.log(error);
@@ -178,7 +181,7 @@
         this.parmasid=this.$route.query.pramadata[0]
         console.log(this.parmasid,888);
         console.log(this.parmasid.imgSrc+""+this.parmasid.fileCode, 999);
-        this.parIrc="Http://172.16.6.11:10080/"+this.parmasid.imgSrc+""+this.parmasid.fileCode;
+        console.log(this.parmasid.recId,820789);
       }
     },
     created(){

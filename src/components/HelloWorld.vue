@@ -355,10 +355,8 @@
       this.$axios.get("http://172.16.6.11:10080/GetResearchIndex?token=A2D4B1BD5BCD43E4BFFAD9C8BE76743C").then((res) => {
       // this.$axios.get("http://jsonplaceholder.typicode.com/posts?userId=1").then((res) => {
         this.willFilterInfoList = res.data;
-        console.log(res.data);
         // this.willFilterInfoList = [...res.data, ...res.data];
         this.total = res.data.length;
-        console.log(this.willFilterInfoList);
         // this.total = this.willFilterInfoList.length;
         this.filterInfo();
       }, error => {

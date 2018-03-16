@@ -19,11 +19,11 @@
           </el-form-item>
           <el-form-item label="开始时间">
             <el-col :span="5">
-              <el-date-picker type="date" v-model="parmasid.startDateTime" placeholder="选择日期" class="DataWidth"></el-date-picker>
+              <el-date-picker type="datetime" v-model="parmasid.startDateTime" placeholder="选择日期" class="DataWidth"></el-date-picker>
             </el-col>
             <el-form-item label="结束时间">
               <el-col :span="5">
-                <el-date-picker type="date" placeholder="选择日期" v-model="parmasid.endDateTime"
+                <el-date-picker type="datetime" placeholder="选择日期" v-model="parmasid.endDateTime"
                                 class="DataWidth"></el-date-picker>
               </el-col>
             </el-form-item>
@@ -44,7 +44,7 @@
             <el-input class="PeopleWidth" v-model="parmasid.responsiblePeople"></el-input>
           </el-form-item>
           <el-form-item style="float: right">
-            <img style="width: 120px;height: 120px;" v-bind:src="parIrc" alt="">
+            <img style="width: 120px;height: 120px;background: red" src="http://qr.liantu.com/api.php?text=http://172.16.6.11:10080/GetLetterInfo?FileCode=DY201803150001" alt="">
           </el-form-item>
           <el-form-item  label="调研参与人" required>
             <el-input class="PeopleWidth" v-model="parmasid.participants"></el-input>
@@ -66,7 +66,9 @@
     data() {
       return {
         parmasid:{},
-        parIrc:""
+        parIrc:"",
+        llss:"http://qr.liantu.com/api.php?text=",
+        imadata:""
       }
     },
 
@@ -85,11 +87,12 @@
       getData(){
         this.parmasid=this.$route.query.pramadata[0]
         console.log(this.parmasid,888);
-        console.log(this.parmasid.imgSrc+""+this.parmasid.fileCode, 999);
-        this.parIrc="Http://172.16.6.11:10080/"+this.parmasid.imgSrc+""+this.parmasid.fileCode;
+        //console.log(this.parmasid.imgSrc+"FileCode="+this.parmasid.fileCode, 999);
+        //this.parIrc=this.parmasid.imgSrc+""+this.parmasid.fileCode;
       }
     },
     mounted:function () {
+
       this.getData()
       this.setData()
     },
