@@ -34,7 +34,7 @@
             </el-form-item>
           </el-form-item>
           <el-form-item label="中心人员">
-            <el-input class="DataWidLeft" v-model="parmasid.CenterContact"></el-input>
+            <el-input class="DataWidLeft" v-model="parmasid.centerContact"></el-input>
             <el-form-item label="人员电话">
               <el-input class="phoneNumber" v-model="parmasid.phoneNumber"></el-input>
             </el-form-item>
@@ -63,7 +63,7 @@
               @close="handleClose1(tag)">
               {{tag}}
             </el-tag>
-            <el-button type="text" @click="handlenav">请选择调研负责人</el-button>
+            <el-button type="text" @click="handlenav">请选择调研负责人(只可选一位)</el-button>
             <el-table @row-click="handlePeople" row-key="`id`" :data="tableData"
                       class="DataTable"
                       v-show="isNav">
@@ -104,8 +104,9 @@
       </el-tab-pane>
       <el-form>
         <el-form-item>
-          <el-button type="primary" @click="doPrint">打印</el-button>
+          <!--<el-button type="primary" @click="doPrint">打印</el-button>-->
           <el-button type="primary" @click="Preservation">保存</el-button>
+          <el-button type="primary" @click="handleGo">返回</el-button>
         </el-form-item>
       </el-form>
     </el-tabs>
@@ -116,7 +117,10 @@
   export default {
     data() {
       return {
-        parmasid:[],
+        parmasid:{
+          ResponsiblePeople: [],
+          Participants: [],
+        },
         parIrc:"",
         jobNav:[],
         dynamicTags: [],
@@ -129,6 +133,9 @@
     },
 
     methods: {
+      handleGo(){
+        this.$router.push('/')
+      },
       handlenav() {
         this.isNav = !this.isNav
       },
@@ -171,8 +178,8 @@
         console.log(dataform,8689);
         let dataok=JSON.stringify(dataform);
 
-        this.$axios.post("http://172.16.6.11:10080/UpdateResearchInfo?token=9DE715AA1FFC401F8212E3DEE6061838",dataok).then((res) => {
-
+        this.$axios.post('http://172.16.6.11:10080/UpdateResearchInfo?token=A2D4B1BD5BCD43E4BFFAD9C8BE76743C',dataok).then((res) => {
+          this.$router.go(-1);
         }, error => {
           console.log(error);
         })
@@ -185,20 +192,20 @@
       }
     },
     created(){
-      this.$axios.get('http://172.16.6.11:10080/GetUserList?token=A2D4B1BD5BCD43E4BFFAD9C8BE76743C').then((res) => {
+      this.$axios.get('http://172.16.6.11:10080/GetUserList?token=D033EC9751E844B19E775D8309A922B8').then((res) => {
         this.tableData = res.data;
         this.tableDatas = res.data;
         console.log(res.data,222);
       }, error => {
         console.log(error);
       });
-      this.$axios.get('http://172.16.6.11:10080/GetUnitList?token=A2D4B1BD5BCD43E4BFFAD9C8BE76743C').then((res) => {
+      this.$axios.get('http://172.16.6.11:10080/GetUnitList?token=D033EC9751E844B19E775D8309A922B8').then((res) => {
         this.schoolObjAry = res.data;
         console.log(res.data,989);
       }, error => {
         console.log(error);
       });
-      this.$axios.get('http://172.16.6.11:10080/GetProjectInfo?token=9DE715AA1FFC401F8212E3DEE6061838').then((res) => {
+      this.$axios.get('http://172.16.6.11:10080/GetProjectInfo?token=D033EC9751E844B19E775D8309A922B8').then((res) => {
         this.jobNav=res.data
         console.log(res.data,28790);
       }, error => {

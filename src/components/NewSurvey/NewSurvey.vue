@@ -41,7 +41,7 @@
           </el-form-item>
           <el-form-item label="调研单位" required>
             <el-select v-model="school.ResearchOrganization" placeholder="请选择" class="DataPickw">
-              <el-option label="安防监控系统" value="shanghai"></el-option>
+              <el-option v-for="(ftem,findex) in FDname" :key="findex" :label="ftem.fdName" v-model="ftem.fdName" ></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="调研负责人" required>
@@ -53,7 +53,7 @@
               @close="handleClose1(tag)">
               {{tag}}
             </el-tag>
-            <el-button type="text" @click="handlenav">请选择调研负责人</el-button>
+            <el-button type="text" @click="handlenav">请选择调研负责人(只可选一位)</el-button>
             <el-table @row-click="handlePeople" row-key="`id`" :data="tableData"
                       class="DataTable"
                       v-show="isNav">
@@ -122,11 +122,11 @@
       <el-carousel indicator-position="none" class="DataCarouse" :autoplay=false>
         <el-carousel-item class="DataCarouseitem"  v-for="(item,indexs) in selectedSchoolObjAry" :key="indexs">
           <span><img src="../../assets/images/Title.png" alt=""></span>
-          <h2 class="DataCarouseh">朝阳区其他公办幼儿园安防监控达标建设勘察介绍信</h2>
+          <h2 class="DataCarouseh"><child v-bind:my-message="school.Title"></child> </h2>
           <div class="DataCarousebox">
             <p class="CarouseBoxP">
             <span class="CarouseBoxspan">
-              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;根据朝阳区教育委员会安排，依据《关于加强本市中小学幼儿园安全工作的意见》（京教勤[2010]8号）文件精神，进一步提高个教育单位安全防范能力，了解幼儿园现有安防监控系统现状。
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<child v-bind:my-message="school.Content"></child>
           </span>
             </p>
 
@@ -137,12 +137,12 @@
             </p>
             <p class="CarouseBoxTwo">
   <span class="CarouseFont">
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本次现场调研时间：<child v-bind:my-message="scdates"></child>至<child v-bind:my-message="scdate"></child>，在此期间，如有调研人员前来与贵单位联系，请贵单位予以接洽。
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本次现场调研时间：<child v-bind:my-message="scdates"></child> &nbsp;至 &nbsp;<child v-bind:my-message="scdate"></child>，在此期间，如有调研人员前来与贵单位联系，请贵单位予以接洽。
   </span>
             </p>
             <p class="CarouseBoxTwo">
             <span class="CarouseFont">
-              信息中心联系人：<child v-bind:my-message="school.Participants.toString()"></child>
+              信息中心联系人：<child v-bind:my-message="school.CenterContact"></child>
             </span>
             </p>
 
@@ -197,6 +197,7 @@
         isNavs: false,
         schoolId: [],
         jobNav:[],
+        FDname:[],
         school:
           {
             LastModBy: "",
@@ -213,7 +214,7 @@
             Participants: [],
             Logo: "",
             SchoolName:[],
-            Teacher: []
+            Teacher: [],
           },
       };
     },
@@ -292,7 +293,7 @@
         this.school.Teacher = this.selectedSchoolObjAry.map(item=>item.Value);
         this.school.Logo="1";
         var obj = JSON.stringify(this.school);
-        this.$axios.post('http://'+window.location.host+'/AddResearch?token='+localStorage.getItem("token"),
+        this.$axios.post('http://172.16.6.11:10080/AddResearch?token=D033EC9751E844B19E775D8309A922B8',
           obj
           //{headers:{
               // "Access-Control-Allow-Origin" : "*",
@@ -326,24 +327,28 @@
 
     },
     mounted() {
-      this.$axios.get('http://'+window.location.host+'/GetUserList?token='+localStorage.getItem("token")).then((res) => {
+      this.$axios.get('http://172.16.6.11:10080/GetUserList?token=A2D4B1BD5BCD43E4BFFAD9C8BE76743C').then((res) => {
         this.tableData = res.data;
         this.tableDatas = res.data;
-        console.log(res.data,222);
         var d = new Date();
         var date = d.getFullYear()+"年"+(d.getMonth()+1)+"月"+d.getDate()+"日"
         this.scdate=date
       }, error => {
         console.log(error);
       });
-      this.$axios.get('http://'+window.location.host+'/GetUnitList?token='+localStorage.getItem("token")).then((res) => {
+      this.$axios.get('http://172.16.6.11:10080/GetUnitList?token=A2D4B1BD5BCD43E4BFFAD9C8BE76743C').then((res) => {
         this.schoolObjAry = res.data;
-        console.log(res.data,989);
+        console.log(this.schoolObjAry,123);
       }, error => {
         console.log(error);
       });
-      this.$axios.get('http://'+window.location.host+'/GetProjectInfo?token='+localStorage.getItem("token")).then((res) => {
+      this.$axios.get('http://172.16.6.11:10080/GetProjectInfo?token=A2D4B1BD5BCD43E4BFFAD9C8BE76743C').then((res) => {
         this.jobNav=res.data
+      }, error => {
+        console.log(error);
+      });
+      this.$axios.get('http://172.16.6.11:10080/GetCompany?token=D033EC9751E844B19E775D8309A922B8').then((res) => {
+        this.FDname=res.data;
         console.log(res.data,28790);
       }, error => {
         console.log(error);

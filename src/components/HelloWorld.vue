@@ -5,8 +5,8 @@
         <div class="Complaint">
           <span
             style="width:4px;height:16px;background:#8eddf2;display:inline-block;margin-right:10px;margin-left:16px;"></span>
-          <span style="color: #333">投诉管理</span>
-          <span>(待办<span style="color:#ccc"> 0 </span>)</span>
+          <span style="color: #333">调研管理</span>
+          <!--<span>(待办<span style="color:#ccc"> 0 </span>)</span>-->
         </div>
         <div>
           <button style="border:1px solid #ccc;width:82px;height:34px;line-height:34px;text-align:center;margin:10px 0 0 15px;cursor:pointer;" @click="handleDeleteAll()">批量删除</button>
@@ -43,7 +43,7 @@
                     </el-option>
                   </el-select>
                 </el-form-item>
-                <el-form-item  label="调研人" style="display: inline-block;margin-left: 28px">
+                <el-form-item  label="学校负责人" style="display: inline-block;margin-left: 28px">
                   <el-input style="width: 300px" v-model="state6"></el-input>
                 </el-form-item>
                 <el-form-item label="状态" prop="region" style="display: inline-block;">
@@ -132,7 +132,7 @@
             </template>
           </el-table-column>
           <el-table-column
-            label="调研人"
+            label="学校负责人"
             width="120">
             <template slot-scope="scope">
               <el-button type="text" size="small" style="color: #000;font-weight: bold" @click="handleDeteilsSur(scope.row.FileCode)">
@@ -145,8 +145,14 @@
             label="状态"
             width="120">
             <template slot-scope="scope">
-              <el-button type="text" size="small" style="color: #000;font-weight: bold" @click="handleDeteilsSur(scope.row.FileCode)">
-                {{scope.row.Status==1?'正常':'逾期' }}
+              <el-button type="text" v-if="scope.row.Status==1" size="small" style="color: #000;font-weight: bold" @click="handleDeteilsSur(scope.row.FileCode)">
+                已指派
+              </el-button>
+              <el-button type="text" v-else-if="scope.row.Status==0" size="small" style="color: #000;font-weight: bold" @click="handleDeteilsSur(scope.row.FileCode)">
+                已关闭
+              </el-button>
+              <el-button type="text" v-else="scope.row.Status==-1" size="small" style="color: #000;font-weight: bold" @click="handleDeteilsSur(scope.row.FileCode)">
+                已逾期
               </el-button>
             </template>
           </el-table-column>
@@ -228,9 +234,11 @@
     },
     methods: {
       handleClose(index,row){
-        console.log(row,5454);
 
-        this.$axios.get("http://172.16.6.11:10080/UpdataStatus?token=9DE715AA1FFC401F8212E3DEE6061838&FileCode="+row.FileCode+"&Status="+row.Status).then((res) => {
+        let stascode=JSON.stringify(row.FileCode)
+        let stastus=JSON.stringify(row.Status=0)
+        console.log(stastus,5454);
+        this.$axios.get('http://172.16.6.11:10080/UpdataStatus?token=D033EC9751E844B19E775D8309A922B8&FileCode='+stascode+'&Status='+stastus).then((res) => {
 
         }, error => {
           console.log(error);
@@ -241,7 +249,7 @@
         let clr=JSON.stringify(this.updata);
         console.log(row.FileCode,57832);
         //this.$axios.post("http://172.16.6.11:10080/UpdateResearchInfo?token=9DE715AA1FFC401F8212E3DEE6061838",clr).then((res) => {
-        this.$axios.get("http://172.16.6.11:10080/GetResearchInfo?FileCode="+row.FileCode).then((res) => {
+        this.$axios.get('http://172.16.6.11:10080/GetResearchInfo?FileCode='+row.FileCode).then((res) => {
           var prasse=res.data
 
           this.$router.push({path:'/Edit',query: {pramadata:prasse}})
@@ -260,7 +268,7 @@
         }
         let DeletAs=JSON.stringify(this.deleall);
         console.log(DeletAs,110);
-        this.$axios.post("http://172.16.6.11:10080/BatchDeleteResearch?token=A2D4B1BD5BCD43E4BFFAD9C8BE76743C",DeletAs).then((res) => {
+        this.$axios.post("http://172.16.6.11:10080/BatchDeleteResearch?token=D033EC9751E844B19E775D8309A922B8",DeletAs).then((res) => {
           window.location.reload();
         }, error => {
           console.log(error);
@@ -272,14 +280,11 @@
       },
       handleDelete(index, row) {
         this.infoList.splice(index, 1);
-        console.log(index,123);
-        console.log(row,321);
         this.Deleterow.push(row)
-        let para = this.Deleterow;
-        let objet=JSON.stringify(para.RecId);
-        console.log(objet,44);
-        this.$axios.post("http://172.16.6.11:10080/BatchDeleteResearch?token=A2D4B1BD5BCD43E4BFFAD9C8BE76743C",objet).then((res) => {
-
+        let para=JSON.stringify([this.Deleterow[index].RecId])
+        console.log(para,44);
+        this.$axios.post('http://172.16.6.11:10080/BatchDeleteResearch?token=D033EC9751E844B19E775D8309A922B8',para).then((res) => {
+          console.log(para,323333);
         }, error => {
           console.log(error);
         })
@@ -310,7 +315,7 @@
       handleDeteilsSur(ers) {
         console.log(ers,2222);
         //var oba = JSON.stringify(ers);
-        this.$axios.get("http://172.16.6.11:10080/GetResearchInfo?FileCode="+ers,
+        this.$axios.get('http://172.16.6.11:10080/GetResearchInfo?FileCode='+ers,
             ).then((res) => {
           //console.log(res.data,222);
 
@@ -352,9 +357,10 @@
       }
     },
     created() {
-      this.$axios.get("http://172.16.6.11:10080/GetResearchIndex?token=A2D4B1BD5BCD43E4BFFAD9C8BE76743C").then((res) => {
+      this.$axios.get('http://'+window.location.host+'/GetResearchIndex?token=D033EC9751E844B19E775D8309A922B8').then((res) => {
       // this.$axios.get("http://jsonplaceholder.typicode.com/posts?userId=1").then((res) => {
         this.willFilterInfoList = res.data;
+        console.log(res.data,89213);
         // this.willFilterInfoList = [...res.data, ...res.data];
         this.total = res.data.length;
         // this.total = this.willFilterInfoList.length;
