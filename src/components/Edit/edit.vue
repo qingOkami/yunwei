@@ -13,7 +13,7 @@
             <el-input type="textarea" :rows="6" v-model="parmasid.content"></el-input>
           </el-form-item>
           <el-form-item label="项目名称" required>
-            <el-select v-model="parmasid.ProjectName" placeholder="请选择项目单位" style="width: 1369px;">
+            <el-select filterable v-model="parmasid.ProjectName" placeholder="请选择项目单位" style="width: 550px;">
               <el-option v-for="(jobs,lis) in jobNav" :key="lis" :label="jobs.projectName" v-model="jobs.projectName" value=""></el-option>
             </el-select>
           </el-form-item>
@@ -22,26 +22,27 @@
               <!--<el-option label="安防监控系统" value="shanghai"></el-option>-->
             <!--</el-select>-->
           <!--</el-form-item>-->
-          <el-form-item label="开始时间">
+          <el-form-item label="开始时间" style="display: inline-block">
             <el-col :span="5">
               <el-date-picker type="datetime" v-model="parmasid.startDateTime" placeholder="选择日期" class="DataWidth"></el-date-picker>
             </el-col>
-            <el-form-item label="结束时间">
-              <el-col :span="5">
-                <el-date-picker type="datetime" placeholder="选择日期" v-model="parmasid.endDateTime"
-                                class="DataWidth"></el-date-picker>
-              </el-col>
-            </el-form-item>
+
+          </el-form-item>
+          <el-form-item label="结束时间" style="display: inline-block;margin-left: 43px">
+            <el-col :span="5">
+              <el-date-picker type="datetime" placeholder="选择日期" v-model="parmasid.endDateTime"
+                              style="width: 200px;"       ></el-date-picker>
+            </el-col>
           </el-form-item>
           <el-form-item label="中心人员">
             <el-input class="DataWidLeft" v-model="parmasid.centerContact"></el-input>
-            <el-form-item label="人员电话">
-              <el-input class="phoneNumber" v-model="parmasid.phoneNumber"></el-input>
+            <el-form-item label="人员电话" style="display: inline-block;margin-left: 45px">
+              <el-input class="phoneNumber"  v-model="parmasid.phoneNumber"></el-input>
             </el-form-item>
           </el-form-item>
           <el-form-item label="调研单位" required>
-            <el-select v-model="parmasid.researchOrganization" placeholder="请选择" class="DataPickw">
-              <el-option label="安防监控系统" value="安防监控系统"></el-option>
+            <el-select filterable v-model="parmasid.researchOrganization" placeholder="请选择" class="DataPickw">
+              <el-option v-for="(jobname,jobdex) in dydwname" :key="jobdex" :label="jobname.fdName" :value="jobname.fdName"></el-option>
             </el-select>
           </el-form-item>
           <!--<el-form-item label="调研单位">-->
@@ -129,6 +130,7 @@
         isNavs: false,
         tables: [],
         tableDatas: [],
+        dydwname:[]
       }
     },
 
@@ -211,6 +213,12 @@
       }, error => {
         console.log(error);
       });
+      this.$axios.get('http://172.16.6.11:10080/GetCompany?token=D033EC9751E844B19E775D8309A922B8').then((res) => {
+        this.dydwname=res.data;
+        console.log(res.data,28790);
+      }, error => {
+        console.log(error);
+      });
     },
     mounted:function () {
       this.getData()
@@ -225,15 +233,20 @@
 
 <style scoped>
   .DataWidth{
-    width: 100%
+    width: 200px
   }
   .DataWidLeft{
-    width: 287px;float: left
+    width: 200px;
+    display: inline-block
   }
   .phoneNumber{
-    width: 265px
+    width: 200px;
+
   }
   .PeopleWidth{
     width: 275px
+  }
+  .DataPickw{
+    width: 200px
   }
 </style>

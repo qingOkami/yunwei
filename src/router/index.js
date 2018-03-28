@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import HelloWorld from '@/components/HelloWorld'
 import Demo from '@/components/Demo'
 import NewSurvey from '@/components/NewSurvey/NewSurvey'
+import PrintWork from '@/components/PrintWork/PrintWork'
 import DetailsSurvey from '@/components/DetailsSurvey/DetailsSurvey'
 import edit from '@/components/Edit/edit'
 // import Demo from '@/components/Demo'
@@ -19,6 +20,11 @@ export default new Router({
       path: '/NewSurvey',
       name: 'NewSurvey',
       component: NewSurvey
+    },
+    {
+      path: '/PrintWork',
+      name: 'PrintWork',
+      component: PrintWork
     },
     {
       path: '/DetailsSurvey',

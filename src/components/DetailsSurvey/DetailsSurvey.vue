@@ -4,13 +4,13 @@
       <el-tab-pane label="调研详情" class="printOrder-data">
         <el-form :model="parmasid" ref="parmasid" label-width="100px">
           <el-form-item label="调研单号">
-            <el-input v-model="parmasid.fileCode"></el-input>
+            <el-input v-model="parmasid.fileCode" ></el-input>
           </el-form-item>
           <el-form-item label="调研主题">
-            <el-input v-model="parmasid.title"></el-input>
+            <el-input v-model="parmasid.title" ></el-input>
           </el-form-item>
           <el-form-item label="调研内容">
-            <el-input type="textarea" :rows="6" v-model="parmasid.content"></el-input>
+            <el-input type="textarea" disabled :rows="6" v-model="parmasid.content"></el-input>
           </el-form-item>
           <el-form-item label="项目名称">
             <el-select v-model="this.parmasid.projectName" disabled placeholder="安防监控系统" class="DataWidth">
@@ -18,40 +18,40 @@
             </el-select>
           </el-form-item>
 
-          <el-form-item style="display: inline-block" label="开始时间">
+          <el-form-item style="display: inline-block" label="开始时间" >
             <el-col :span="5">
-              <el-date-picker type="datetime" v-model="parmasid.startDateTime" placeholder="选择日期" class="DataWidLeft"></el-date-picker>
+              <el-date-picker type="datetime"  v-model="parmasid.startDateTime" placeholder="选择日期" class="DataWidLeft"></el-date-picker>
             </el-col>
           </el-form-item>
 
           <el-form-item style="display: inline-block" label="结束时间" >
               <el-col :span="5">
-                <el-date-picker type="datetime" placeholder="选择日期" v-model="parmasid.endDateTime"
+                <el-date-picker disabled type="datetime" placeholder="选择日期" v-model="parmasid.endDateTime"
                                 class="DataWidLeft"></el-date-picker>
               </el-col>
             </el-form-item>
           <el-form-item label="中心人员">
-            <el-input class="DataWidLeft" v-model="parmasid.centerContact"></el-input>
+            <el-input class="DataWidLeft"  v-model="parmasid.centerContact"></el-input>
           </el-form-item>
 
           <el-form-item label="人员电话">
-              <el-input class="DataWidLeft" v-model="parmasid.phoneNumber"></el-input>
+              <el-input class="DataWidLeft"  v-model="parmasid.phoneNumber"></el-input>
             </el-form-item>
 
           <el-form-item label="调研单位">
-            <el-select v-model="parmasid.researchOrganization" disabled placeholder="安防监控系统" class="DataWidth">
+            <el-select v-model="parmasid.researchOrganization"  placeholder="安防监控系统" class="DataWidth">
               <el-option label="安防监控系统" value=""></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item  label="调研负责人" required>
-            <el-input class="PeopleWidth" v-model="parmasid.responsiblePeople"></el-input>
+          <el-form-item  label="调研负责人">
+            <el-input class="PeopleWidth"  v-model="parmasid.responsiblePeople"></el-input>
           </el-form-item>
           <el-form-item style="float: right">
             <!--this.parmasid.fileCode-->
             <img style="width: 120px;height: 120px;" :src="imgSrc" alt="">
           </el-form-item>
-          <el-form-item  label="调研参与人" required>
-            <el-input class="PeopleWidth" v-model="parmasid.participants"></el-input>
+          <el-form-item  label="调研参与人">
+            <el-input class="PeopleWidth"  v-model="parmasid.participants"></el-input>
           </el-form-item>
         </el-form>
 
@@ -95,6 +95,8 @@
         }, 300)
       },
       doPrint(){
+        let Printobj=this.parmasid
+        this.$router.push({path:'/PrintWork',query: {Prints:Printobj}})
         this.isShow=false;
         var newstr = document.getElementsByClassName('printOrder-data')[0].innerHTML;
         this.inv()
@@ -107,7 +109,6 @@
       },
       getData(){
         this.parmasid=this.$route.query.pramadata[0]
-        //console.log(this.parmasid,888);
         console.log(this.parmasid,707);
       }
     },
@@ -116,7 +117,7 @@
       let imageS="http://qr.liantu.com/api.php?text="+this.parmasid.serverIP+"/iitsp/research.jsp?fileCode="
       this.imgSrc=imageS+this.parmasid.fileCode
       //
-      console.log(this.imgSrc,87,99);
+      console.log(this.imgSrc,8787,9999);
     },
     watch:{
       '$route'(to,form){

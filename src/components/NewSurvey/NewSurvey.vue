@@ -1,8 +1,15 @@
 <template>
   <div>
-    <el-tabs>
+    <div style="position: absolute;top: 10px;right: 50px;z-index:999999;">
+    <el-button size="mini" type="primary" @click="dialogVisibles">预览</el-button>
+    <el-button size="mini" type="success" @click="postData">保存</el-button>
+    <el-button size="mini" type="primary" @click="resetForm">返回</el-button>
+    </div>
+
+    <el-tabs style="margin-top: 10px">
+
       <el-tab-pane label="新建调研">
-        <el-form :model="school" ref="school" label-width="100px" class="demo-ruleForm">
+        <el-form :model="school" ref="school" label-width="150px" class="demo-ruleForm">
           <el-form-item label="调研主题" prop="" required>
             <el-input type="text" v-model="school.Title"></el-input>
           </el-form-item>
@@ -12,7 +19,7 @@
           </el-form-item>
 
           <el-form-item label="项目名称" required>
-            <el-select v-model="school.ProjectName" placeholder="请选择项目单位" style="width: 1369px;">
+            <el-select filterable  v-model="school.ProjectName" placeholder="请选择项目单位" style="width: 500px;">
               <el-option v-for="(jobs,lis) in jobNav" :key="lis" :label="jobs.projectName" v-model="jobs.projectName" value=""></el-option>
             </el-select>
           </el-form-item>
@@ -40,7 +47,7 @@
             <el-input v-model="school.PhoneNumber" class="DataPickw"></el-input>
           </el-form-item>
           <el-form-item label="调研单位" required>
-            <el-select v-model="school.ResearchOrganization" placeholder="请选择" class="DataPickw">
+            <el-select filterable  v-model="school.ResearchOrganization" placeholder="请选择" class="DataPickw">
               <el-option v-for="(ftem,findex) in FDname" :key="findex" :label="ftem.fdName" v-model="ftem.fdName" ></el-option>
             </el-select>
           </el-form-item>
@@ -79,13 +86,14 @@
               <el-table-column prop="UserName" label="用户名" width="180"/>
               <el-table-column prop="GroupName" label="组织机构" width="300"/>
               <el-table-column prop="RoleId" label="角色名称"/>
+
             </el-table>
           </el-form-item>
 
-          <el-form v-for="(selectedSchoolObj, index) in selectedSchoolObjAry" :key="index">
+          <el-form v-for="(selectedSchoolObj, index) in selectedSchoolObjAry" style="margin-left: 70px" :key="index">
             <template slot-scope="scope">
               <el-form-item label="学校名称" class="DataInline">
-                <el-select @change="selectSchool(selectedSchoolObj.SchoolName, index)" v-model="selectedSchoolObj.SchoolName"
+                <el-select filterable  @change="selectSchool(selectedSchoolObj.SchoolName, index)" v-model="selectedSchoolObj.SchoolName"
                            value-key="UnitId"
                            placeholder="请选择学校" class="DataOption">
                   <el-option v-for="(selectedSchoolFromApiObj, i) in schoolObjAry" :key="i"
@@ -108,11 +116,9 @@
           </el-form-item>
         </el-form>
       </el-tab-pane>
-        <el-button type="primary" @click="dialogVisibles">预览</el-button>
-        <el-button type="primary" @click="postData">保存</el-button>
-        <el-button @click="resetForm">返回</el-button>
 
     </el-tabs>
+
     <el-dialog
       title="预览"
       :visible.sync="dialogVisible"
@@ -126,18 +132,18 @@
           <div class="DataCarousebox">
             <p class="CarouseBoxP">
             <span class="CarouseBoxspan">
-              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<child v-bind:my-message="school.Content"></child>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<child v-bind:my-message="school.Content"></child>
           </span>
             </p>
 
             <p class="CarouseBoxTwo">
           <span class="CarouseFont">
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;兹介绍 <child v-bind:my-message="school.ResponsiblePeople.toLocaleString()"></child> 同志对贵单位安防监控系统进行勘察，望贵单位予以积极配合。
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;兹介绍 <child v-bind:my-message="school.ResponsiblePeople.toLocaleString()"></child> 同志对贵单位安防监控系统进行勘察，望贵单位予以积极配合。
           </span>
             </p>
             <p class="CarouseBoxTwo">
   <span class="CarouseFont">
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本次现场调研时间：<child v-bind:my-message="scdates"></child> &nbsp;至 &nbsp;<child v-bind:my-message="scdate"></child>，在此期间，如有调研人员前来与贵单位联系，请贵单位予以接洽。
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本次现场调研时间：<child v-bind:my-message="scdates"></child> &nbsp;至 &nbsp;<child v-bind:my-message="scdate"></child>，在此期间，如有调研人员前来与贵单位联系，请贵单位予以接洽。
   </span>
             </p>
             <p class="CarouseBoxTwo">
@@ -151,10 +157,12 @@
               联系电话：<child v-bind:my-message="school.PhoneNumber.toString()"></child>
             </span>
             </p>
-            <p>
-              <img class="CarouseImg" src="../../assets/images/nobcs.jpg" alt="">
-            </p>
+
+
             <div class="CarouseRig">
+              <p style="text-align: right;margin-right: 50px">
+                <img class="CarouseImg" src="../../assets/images/nobcs.jpg" alt="">
+              </p>
               <p><span>北京市朝阳区现代教育信息网络中心</span></p>
               <p class="CarousePmar"><child v-bind:my-message="scdate"></child></p>
             </div>
@@ -372,10 +380,10 @@
   }
   .DataInleft{
     display: inline-block;
-    margin-left: 135px
+    /*margin-left: 100px*/
   }
   .DataPickw{
-    width: 565px;
+    width: 500px;
   }
   .DataTable{
     width:700px;height:500px;border:1px solid #efefef;position: fixed;top:100px;left: 30%;overflow-y:scroll;z-index: 9999;
@@ -387,6 +395,7 @@
     height: 800px;
   }
   .DataCarouseitem{
+    overflow-y: scroll;
     height: 750px
   }
   .DataCarouseh{
