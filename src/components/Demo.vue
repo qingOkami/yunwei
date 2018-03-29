@@ -1,312 +1,504 @@
 <template>
-  <div>
-    <el-tabs type="border-card">
-      <el-tab-pane label="新建调研">
-        <el-form :model="school" ref="school" label-width="100px" class="demo-ruleForm">
-          <el-form-item label="调研主题" prop="" required>
-            <el-input type="text" v-model="school.Title"></el-input>
-          </el-form-item>
-
-          <el-form-item label="调研内容" required>
-            <el-input type="textarea" v-model="school.Content" :rows="6"></el-input>
-          </el-form-item>
-
-          <el-form-item label="项目名称" required>
-            <el-select v-model="school.ProjectName" placeholder="请选择" style="width: 1369px;">
-              <el-option label="安防监控系统" value="shanghai"></el-option>
-            </el-select>
-          </el-form-item>
-
-          <el-form-item label="开始时间" required style="display: inline-block">
-            <el-col :span="11">
-              <el-form-item prop="">
-                <el-date-picker type="date" placeholder="选择日期" v-model="school.StartDateTime"
-                                style="width: 565px;"></el-date-picker>
-              </el-form-item>
-            </el-col>
-          </el-form-item>
-          <el-form-item label="截止时间" required style="display: inline-block;margin-left: 135px">
-            <el-col :span="11">
-              <el-form-item>
-                <el-date-picker type="date" placeholder="选择日期" v-model="school.EndDateTime"
-                                style="width: 565px;"></el-date-picker>
-              </el-form-item>
-            </el-col>
-          </el-form-item>
-          <el-form-item label="中心联系人" required style="display: inline-block">
-            <el-input v-model="school.CenterContact" style="width: 565px;"></el-input>
-          </el-form-item>
-          <el-form-item label="联系电话" required style="display: inline-block;margin-left: 135px">
-            <el-input v-model="school.PhoneNumber" style="width: 565px;"></el-input>
-          </el-form-item>
-          <el-form-item label="调研单位" required>
-            <el-select v-model="school.ResearchOrganization" placeholder="请选择调研单位" style="width: 565px;">
-              <el-option label="北京思维实创科技股份有限公司" value=""></el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="调研负责人" required>
-            <el-tag
-              :key="tag"
-              v-for="tag in dynamicTags"
-              closable
-              :disable-transitions="false"
-              @close="handleClose1(tag)">
-              {{tag}}
-            </el-tag>
-            <el-button type="text" @click="handlenav">请选择调研负责人</el-button>
-            <el-table @row-click="handlePeople" row-key="`id`" :data="tableData"
-                      style="width:700px;height:500px;border:1px solid #efefef;position: fixed;top:100px;left: 30%;overflow-y:scroll;z-index: 9999;"
-                      v-show="isNav">
-              <el-table-column prop="UserName" label="用户名" width="180"/>
-              <el-table-column prop="GroupName" label="组织机构" width="300"/>
-              <el-table-column prop="RoleId" label="角色名称"/>
-            </el-table>
-          </el-form-item>
-
-          <el-form-item label="调研参与人" prop="">
-            <el-tag
-              :key="tags"
-              v-for="tags in tables"
-              closable
-              @close="handleClose2(tags)"
-            >
-              {{tags}}
-            </el-tag>
-            <el-button type="text" @click="handlenavss">请选择调研参与人</el-button>
-            <el-table @row-click="handlePeople2" row-key="`name`" :data="tableDatas"
-                      style="width:700px;height:500px;border:1px solid #efefef;position: fixed;top:100px;left: 30%;overflow-y:scroll;z-index: 9999;"
-                      v-show="isNavs">
-              <el-table-column prop="UserName" label="用户名" width="180"/>
-              <el-table-column prop="GroupName" label="组织机构" width="300"/>
-              <el-table-column prop="RoleId" label="角色名称"/>
-            </el-table>
-          </el-form-item>
-
-
-          <el-form v-for="(selectedSchoolObj, index) in selectedSchoolObjAry" :key="index">
-            <template slot-scope="scope">
-              <el-form-item label="学校名称" style="display: inline-block">
-                <el-select @change="selectSchool(selectedSchoolObj.id, index)"
-                           v-model="selectedSchoolObj.id"
-                           value-key="UnitId"
-                           placeholder="请选择学校" style="width: 400px">
-                  <el-option v-for="(selectedSchoolFromApiObj, i) in schoolObjAry" :key="i"
-                             :label="selectedSchoolFromApiObj.id"
-                             v-model="selectedSchoolFromApiObj.id"></el-option>
-                </el-select>
-              </el-form-item>
-              <el-form-item label="学校负责人" style="display: inline-block;margin-left: 135px">
-                <el-input :value="selectedSchoolObj.email" readonly style="width: 400px;"></el-input>
-              </el-form-item>
-              <el-button @click="deleteRow(index)">删除</el-button>
-            </template>
-          </el-form>
-          <el-form-item>
-            <el-button @click="creactSchool">添加更多学校</el-button>
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" @click="dialogVisible = true">预览</el-button>
-            <el-button type="primary" @click="postData">保存</el-button>
-            <el-button @click="resetForm">返回</el-button>
-          </el-form-item>
-        </el-form>
-      </el-tab-pane>
-    </el-tabs>
-    <el-dialog
-      title="预览"
-      :visible.sync="dialogVisible"
-      width="60%"
-      :before-close="handleClose">
-      <span>这是一段信息</span>
-      <h2 style="text-align: center">朝阳区其他公办幼儿园安防监控达标建设勘察介绍信</h2>
-      <div style="padding: 0 60px">
-        <p style="margin-top: 35px" id="kk">
-            <span style="font-weight:400;font-size: 16px;">
-              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;根据朝阳区教育委员会安排，依据《关于加强本市中小学幼儿园安全工作的意见》（京教勤[2010]8号）文件精神，进一步提高个教育单位安全防范能力，了解幼儿园现有安防监控系统现状。
-          </span>
-        </p>
-
-        <p style="margin-top: 40px">
-          <span style="font-weight:400;font-size: 16px;">
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;兹介绍 王宝磊 同志对贵单位安防监控系统进行勘察，望贵单位予以积极配合。
-          </span>
-        </p>
-        <p style="margin-top: 20px">
-  <span style="font-weight:400;font-size: 16px;">
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本次现场调研时间：2017年11月24日-2017年12月11日，在此期间，如有调研人员前来与贵单位联系，请贵单位予以接洽。
-  </span>
-        </p>
-        <p style="margin-top: 40px">
-            <span style="font-weight:400;font-size: 16px;">
-              信息中心联系人：高超
-            </span>
-        </p>
-
-        <p>
-            <span style="font-weight:400;font-size: 16px;">
-              联系电话：85979246-84044
-            </span>
-        </p>
-        <p>
-          这里是图片
-          <img src="" alt="">
-        </p>
-        <div style="text-align: right">
-          <p><span>北京市朝阳区现代教育信息网络中心</span></p>
-          <p style="margin-right: 50px"><span>2018年01月02日</span></p>
+  <div class="hello">
+    <el-container>
+      <el-header>
+        <div class="Complaint">
+          <span
+            style="width:4px;height:16px;background:#8eddf2;display:inline-block;margin-right:10px;margin-left:16px;"></span>
+          <span style="color: #333">调研管理</span>
+          <!--<span>(待办<span style="color:#ccc"> 0 </span>)</span>-->
         </div>
-      </div>
-      <span slot="footer" class="dialog-footer">
-    <el-button style="margin-top: 100px" @click="dialogVisible = false">取 消</el-button>
-    <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
-  </span>
-    </el-dialog>
+        <div>
+          <button style="border:1px solid #ccc;width:100px;height:34px;line-height:34px;text-align:center;margin:10px 0 0 15px;cursor:pointer;" @click="handleDeleteAll()">批量删除</button>
+          <div style="float: right">
+
+            <el-autocomplete
+              v-model="state4"
+              :fetch-suggestions="querySearchAsync"
+              placeholder="搜索"
+              @select="handleSelect"
+              style="width: 250px"
+            ></el-autocomplete>
+
+            <el-popover ref="popover4"
+                        placement="bottom"
+                        width="1000"
+                        trigger="click"
+                        v-model="visible2"
+            >
+              <el-form  label-width="120px">
+                <el-form-item  label="调研主题" style="display: inline-block">
+                  <el-input style="width: 150px" v-model="state7"></el-input>
+                </el-form-item>
+                <el-form-item label="学校名称" prop="region" style="display: inline-block;">
+                  <el-select filterable  v-model="state9" value-key="RecId" placeholder="请选择" style="width: 200px" >
+                    <el-option v-for="(val,index) in schoolSeo" :label="val.name" :value="val.name" :key="index" >
+                    </el-option>
+                  </el-select>
+                </el-form-item>
+                <el-form-item  label="负责人" style="display: inline-block;">
+                  <el-input style="width: 200px" v-model="state5"></el-input>
+                  <!--<el-autocomplete v-model="state5" style="width: 200px"></el-autocomplete>-->
+                </el-form-item>
+                <el-form-item label="调研单位" prop="region" style="display: inline-block;">
+                  <el-select filterable  v-model="state10" value-key="RecId" placeholder="请选择" style="width: 150px" >
+                    <el-option v-for="(val,index) in dyname" :label="val.email" :value="val.email" :key="index" >
+                    </el-option>
+                  </el-select>
+                </el-form-item>
+                <el-form-item  label="学校负责人" style="display: inline-block;margin-left: 42px;">
+                  <el-input style="width: 200px" v-model="state6"></el-input>
+                </el-form-item>
+                <el-form-item label="状态" prop="region" style="display: inline-block;margin-left: 35px">
+                  <el-select  v-model="state8" value-key="RecId" placeholder="请选择" style="width: 200px;" >
+                    <el-option label="已指派" value="已指派"></el-option>
+                    <el-option label="已关闭" value="已关闭"></el-option>
+                    <el-option label="已逾期" value="已逾期"></el-option>
+                  </el-select>
+                </el-form-item>
+                <div style="text-align: center">
+                  <el-button @click="popoverReset" style="color:rgb(133, 197, 246)">重置</el-button>
+                  <el-button @click="visible2 = false">取消</el-button>
+                </div>
+              </el-form>
+
+            </el-popover>
+            <el-button style="margin-right: -10px; background: rgb(170, 192, 174);" v-popover:popover4>更多条件</el-button>
+            <el-button style="background: #ccc;border: none;color: #000" type="info" @click="winReload">刷新</el-button>
+            <router-link to="/NewSurvey">
+              <el-button type="success" style="margin-left: 0;background-color:rgb(92, 184, 92)">新建调研</el-button>
+            </router-link>
+          </div>
+        </div>
+
+      </el-header>
+
+      <el-main>
+
+        <el-table
+          :data="infoList"
+          border
+          tooltip-effect="dark"
+          style="width: 100%;"
+          @selection-change="handleSelectionChange">
+
+          <el-table-column
+            type="selection"
+            selection-change
+            width="55">
+          </el-table-column>
+          <el-table-column
+            label="调研单号"
+            width="120">
+            <template slot-scope="scope">
+              <el-button type="text" size="small" style="color: #000;" @click="handleDeteilsSur(scope.row.FileCode)">
+                {{scope.row.body}}
+              </el-button>
+            </template>
+          </el-table-column>
+
+          <el-table-column
+            label="调研主题"
+            width="230">
+            <template slot-scope="scope">
+              <el-button type="text" size="small" style="color: #000;" @click="handleDeteilsSur(scope.row.FileCode)">
+                {{scope.row.id }}
+              </el-button>
+            </template>
+          </el-table-column>
+
+          <el-table-column
+            label="学校名称"
+            show-overflow-tooltip>
+            <template slot-scope="scope">
+              <el-button type="text" size="small" style="color: #000;" @click="handleDeteilsSur(scope.row.FileCode)">
+                {{scope.row.name}}
+              </el-button>
+            </template>
+          </el-table-column>
+          <el-table-column
+            prop="id"
+            label="负责人"
+            width="100">
+            <template slot-scope="scope">
+              <el-button type="text" size="small" style="color: #000;" @click="handleDeteilsSur(scope.row.FileCode)">
+                {{scope.row.email}}
+              </el-button>
+            </template>
+          </el-table-column>
+          <!--<el-table-column-->
+          <!--prop="FileCode"-->
+          <!--label="负责人"-->
+          <!--width="80">-->
+          <!--</el-table-column>-->
+          <el-table-column
+            label="调研单位"
+          >
+            <template slot-scope="scope">
+              <el-button type="text" size="small" style="color: #000;" @click="handleDeteilsSur(scope.row.FileCode)">
+                {{scope.row.ResearchOrganization }}
+              </el-button>
+            </template>
+          </el-table-column>
+          <el-table-column
+            label="学校负责人"
+            width="100">
+            <template slot-scope="scope">
+              <el-button type="text" size="small" style="color: #000;" @click="handleDeteilsSur(scope.row.FileCode)">
+                {{scope.row.ResearchPeople}}
+              </el-button>
+            </template>
+          </el-table-column>
+          <el-table-column
+            prop="Title"
+            label="状态"
+            width="80">
+            <template slot-scope="scope">
+              <el-button type="text" v-if="scope.row.Status==1" size="small" style="color: #000;" @click="handleDeteilsSur(scope.row.FileCode)">
+                已指派
+              </el-button>
+              <el-button type="text" v-else-if="scope.row.Status==0" size="small" style="color: #000;" @click="handleDeteilsSur(scope.row.FileCode)">
+                已关闭
+              </el-button>
+              <el-button type="text" v-else="scope.row.Status==-1" size="small" style="color: #000;" @click="handleDeteilsSur(scope.row.FileCode)">
+                已逾期
+              </el-button>
+            </template>
+          </el-table-column>
+          <el-table-column
+            label="操作"
+            width="200">
+            <template slot-scope="scope">
+              <el-button
+                size="mini"
+                style="border: 0"
+                @click="handleUpdata(scope.$index, scope.row)">
+                <img src="../assets/icon/dfp.png" alt="">
+              </el-button>
+              <el-button
+                size="mini"
+                style="border: 0"
+                @click="handleDelete(scope.$index, scope.row)">
+                <img src="../assets/icon/user.png" alt="">
+              </el-button>
+              <el-button
+                size="mini"
+                style="border: 0"
+                @click="handleClose(scope.$index, scope.row)"
+              >
+                <img src="../assets/icon/dgb_03.png" alt="">
+              </el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-main>
+    </el-container>
+
+    <el-pagination
+      background
+      layout="prev, pager, next"
+      :page-size="pageSize"
+      @current-change="handleCurrentChange"
+      :total="total"
+      style="float: right"
+    >
+      <!--@current-change.sync="pageTurn(currentPage)"-->
+    </el-pagination>
+
   </div>
 </template>
 
 <script>
   export default {
     data() {
-      const defaultSchoolObj = {
-        "postId": null,
-        "id": null,
-        "name": null,
-        "email": null,
-        "body": null,
-      };
       return {
-        scdate: '',
-        scdates: '',
-        // schoolcreat: [1],
-        defaultSchoolObj,
-        selectedSchoolObjAry: [
-          {...defaultSchoolObj},
-        ],
-        schoolObjAry: [],
-        selectedEmail: 'ok@qq.com',
-        selectedSchoolId: '',
-        tableData: [],
-        datas: '',
-        tableDatas: [],
-        dynamicTags: [],
-        tables: [],
-        dialogVisible: false,
-        isShow: false,
+        visible2:false,
+        schoolSeo:[],
+        dyname:[],
+        schooltitle:[],
+        schoolStatus:[],
+        schoolpeo:[],
+        total: 0,
+        currentPage: 1,
+        newArr: [],
+        infoList: [],
+        willFilterInfoList: [],
+        // movieInfoList: [],
+        pageSize: 10,
+        restaurants: [],
+        state4: '',
+        state5:'',
+        state6:'',
+        state7:'',
+        state8:'',
+        state9:'',
+        state10:'',
+        _that: {},
+        timeout: null,
+        DataList: [],
         results: [],
-        isNav: false,
-        isNavs: false,
-        schoolId: [],
-        school: //这是要传入JSON.stringfy方法转换成 json字符串并上传的对象
-          {
-            LastModBy: "",
-            StartDateTime: "",
-            EndDateTime: "",
-            CreatedBy: "",
-            Title: "",
-            Content: "",
-            CenterContact: "",
-            ProjectName: "",
-            PhoneNumber: "",
-            ResearchOrganization: "",
-            ResponsiblePeople: [],
-            Participants: [],
-            Logo: "",
-            SchoolName: [],
-            Teacher: []
-          },
+        groupedInfoAryAry: [],
+        tableData3: [],
+        multipleSelection: [],
+        obd:{FileCode:1},
+        pras:{},
+        Deleterow:[],
+        deleall:[],
+        updata:[],
+        dataStatus:'',
+        InfoListText:[]
       };
     },
     methods: {
-      deleteRow(index) { //这里边的形参是selectedSchoolObjAry的要删除项的索引, 传入的实参同理
-        this.selectedSchoolObjAry.splice(index, 1)
-      },
-      creactSchool() {
-        this.selectedSchoolObjAry.push({...this.defaultSchoolObj});
-      },
-      selectSchool(theOneId, selectedSchoolObjAryIndex) {
-        const [selectedSchoolFormApiObj] = this.schoolObjAry.filter(item => {
-          return item.id == theOneId;
+      handleClose(index,row){
+
+        let stascode=JSON.stringify(row.FileCode)
+        let stastus=JSON.stringify(row.Status=0)
+        console.log(stastus,5454);
+        this.$axios.get('http://172.16.6.11:10080/UpdataStatus?token=D033EC9751E844B19E775D8309A922B8&FileCode='+stascode+'&Status='+stastus).then((res) => {
+
+        }, error => {
+          console.log(error);
         });
-        const email = selectedSchoolFormApiObj.email;
-        //循环遍历匹配上的对象中的属性赋值给已被监听的对象，如果直接赋值为该对象，vue不会更新数据
-        for (let key in selectedSchoolFormApiObj) {
-          if (selectedSchoolFormApiObj.hasOwnProperty(key)) {
-            this.selectedSchoolObjAry[selectedSchoolObjAryIndex][key] = selectedSchoolFormApiObj[key];
-          }
+      },
+      handleUpdata(index,row){
+        this.updata =row;
+        let clr=JSON.stringify(this.updata);
+        console.log(row.FileCode,57832);
+        //this.$axios.post("http://172.16.6.11:10080/UpdateResearchInfo?token=9DE715AA1FFC401F8212E3DEE6061838",clr).then((res) => {
+        this.$axios.get('http://172.16.6.11:10080/GetResearchInfo?FileCode='+row.FileCode).then((res) => {
+          var prasse=res.data
+
+          this.$router.push({path:'/Edit',query: {pramadata:prasse}})
+        }, error => {
+          console.log(error);
+        });
+      },
+      popoverReset(){
+        this.state4 = '';
+        this.state5='';
+        this.state6='';
+        this.state7='';
+        this.state8='';
+        this.state9='';
+        this.state10='';
+      },
+      winReload(){
+        window.location.reload();
+
+      },
+      handleDeleteAll(){
+        this.Deleterow=this.multipleSelection;
+        let DAll=this.Deleterow
+        for(var as in this.Deleterow){
+          this.deleall.push(DAll[as].RecId)
         }
-        // this.school.SchoolName.splice(selectedSchoolObjAryIndex, 1, theOneId);
-        // this.school.Teacher.splice(selectedSchoolObjAryIndex, 1, email);
+        let DeletAs=JSON.stringify(this.deleall);
+        console.log(DeletAs,110);
+        this.$axios.post("http://172.16.6.11:10080/BatchDeleteResearch?token=D033EC9751E844B19E775D8309A922B8",DeletAs).then((res) => {
+          window.location.reload();
+        }, error => {
+          console.log(error);
+        })
+        this.$message({
+          message: "操作成功！",
+          type: 'success'
+        });
       },
-      handlenav() {
-        this.isNav = !this.isNav
-      },
-      handlenavss() {
-        this.isNavs = !this.isNavs
-      },
-      handlePeople(row) {
-        this.dynamicTags.push(row.UserName);
-        this.isNav = !this.isNav
-        this.school.ResponsiblePeople = this.dynamicTags;
-      },
-      handlePeople2(row) {
-        this.tables.push(row.UserName)
-        this.isNavs = !this.isNavs
-        console.log(this.tables);
-        this.school.Participants = this.tables
-      },
-      handleClose1(tag) {
-        this.dynamicTags.splice(this.dynamicTags.indexOf(tag), 1)
-        this.school.ResponsiblePeople = this.dynamicTags;
-      },
-      handleClose2(tags) {
-        this.tables.splice(this.tables.indexOf(tags), 1)
-      },
-      postData() {
-        this.school.SchoolName = this.selectedSchoolObjAry.map(item=>item.id);
-        this.school.Teacher = this.selectedSchoolObjAry.map(item=>item.email);
-        var obj = JSON.stringify(this.school);
-        console.log('postData exectued', 272, 272);
-        this.$axios.post('http://jsonplaceholder.typicode.com/posts',
-          obj,
-        )
-          .then((res) => {
-            console.log(res.data);
-            this.datas = res.data;
-          }, error => {
-            console.log(error);
-          })
-      },
-      resetForm(formName) {
-        this.$router.go(-1)
-      },
-      showToggle: function () {
-        this.isShow = !this.isShow
-      },
-      handleClose(done) {
+      handleDelete(index, row) {
         this.$confirm('确认关闭？')
           .then(_ => {
-            done();
+            this.infoList.splice(index, 1);
+            this.Deleterow.push(row)
+            let para=JSON.stringify([this.Deleterow[index].RecId])
+            console.log(para,44);
+            this.$axios.post('http://172.16.6.11:10080/BatchDeleteResearch?token=D033EC9751E844B19E775D8309A922B8',para).then((res) => {
+              console.log(para,323333);
+            }, error => {
+              console.log(error);
+            })
+            this.$message({
+              message: "操作成功！",
+              type: 'success'
+            });
           })
           .catch(_ => {
           });
+
+      },
+      querySearchAsync(queryString, cb) {
+        var restaurants = this.restaurants;
+        var results = queryString ? restaurants.filter(this.createStateFilter(queryString)) : restaurants;
+        clearTimeout(this.timeout);
+        this.timeout = setTimeout(() => {
+          cb(results);
+        }, 3000 * Math.random());
+      },
+      createStateFilter(queryString) {
+        return (state) => {
+          return (state.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
+        };
+      },
+      handleSelect(item) {
+        console.log(item);
+      },
+      handleSelectionChange(val,index) {
+        this.multipleSelection = val;
+      },
+      handleDeteilsSur(ers) {
+        console.log(ers,2222);
+        //var oba = JSON.stringify(ers);
+        this.$axios.get('http://172.16.6.11:10080/GetResearchInfo?FileCode='+ers,
+        ).then((res) => {
+          //console.log(res.data,222);
+
+          var prasse=res.data
+
+          this.$router.push({path:'/DetailsSurvey',query: {pramadata:prasse}})
+
+        }, error => {
+          console.log(error);
+        })
+
+      },
+      computeArr(whichPageIndex = 0) {
+        this.infoList = this.newArr[whichPageIndex];
+        console.log(this.infoList, 195, 195);
+      },
+      handleCurrentChange(currentPage) {
+        this.currentPage = currentPage;
+        this.infoList = this.groupedInfoAryAry[currentPage - 1];
+        this.state4 = '';
+        this.state5='';
+        this.state6='';
+        this.state7='';
+        this.state8='';
+        this.state9='';
+        this.state10='';
+      },
+      filterInfo() {
+
+        this.newArr = [];
+        let tmpArr = [];
+        this.willFilterInfoList.forEach((item, index) => {
+          tmpArr.push(item);
+          const order = index + 1;
+          if (order % this.pageSize === 0 || index === this.willFilterInfoList.length - 1) {
+            this.newArr.push(tmpArr);
+            tmpArr = [];
+          }
+        });
+        this.groupedInfoAryAry = this.newArr;
+        this.infoList = this.newArr[0];
       }
     },
-    beforeCreate() {
-      this.$axios.get('http://172.16.6.11:10080/GetUserList?token=A2D4B1BD5BCD43E4BFFAD9C8BE76743C').then((res) => {
-        this.tableData = res.data;
-        this.tableDatas = res.data;
+    created() {
+      this.$axios.get('http://jsonplaceholder.typicode.com/posts/1/comments').then((res) => {
+        this.willFilterInfoList = res.data;
+        console.log(this.willFilterInfoList,89213);
+        this.total = res.data.length;
+        this.filterInfo();
       }, error => {
         console.log(error);
       });
       this.$axios.get('http://jsonplaceholder.typicode.com/comments?postId=1').then((res) => {
-        this.schoolObjAry = res.data;
-        console.log(res.data);
+        this.dyname=res.data;
+        console.log(res.data,28790);
       }, error => {
         console.log(error);
-      })
+      });
+      this.$axios.get('http://jsonplaceholder.typicode.com/comments?postId=1').then((res) => {
+        this.schoolSeo = res.data;
+        console.log(this.schoolSeo,123);
+      }, error => {
+        console.log(error);
+      });
     },
-  }
-</script>
+    watch: {
+      state4: function (val) {
+        if(val === ''){
+          return this.infoList = this.groupedInfoAryAry[this.currentPage - 1];
+        };
+        this.infoList = this.willFilterInfoList.filter(item=>{
+          console.log(val,9898);
+          // return item.ResearchOrganization.toString().includes(val);
+          if(item.ResearchOrganization.toString().includes(val)) return true;
+          if(item.FileCode.toString().includes(val)) return true;
+          if(item.ResponsiblePeople.toString().includes(val)) return true;
+          if(item.SchoolName.toString().includes(val)) return true;
+          if(item.Status.toString().includes(val)) return true;
+          if(item.Title.toString().includes(val)) return true;
+        });
+      },
+      state5:function (val) {
+        if(val === ''){
+          return this.infoList = this.groupedInfoAryAry[this.currentPage - 1];
+        };
+        this.infoList = this.infoList.filter(item=>{
+          console.log(val,8888);
+          return item.email.toString().includes(val);
+        });
+      },
+      state6:function (val) {
+        if(val === ''){
+          return this.infoList = this.groupedInfoAryAry[this.currentPage - 1];
+        };
+        this.infoList = this.willFilterInfoList.filter(item=>{
+          console.log(arguments);
+          return item.ResearchPeople.toString().includes(val);
+        });
+      },
+      state7:function (val) {
+        if(val === ''){
+          return this.infoList = this.groupedInfoAryAry[this.currentPage - 1];
+        };
+        this.infoList = this.willFilterInfoList.filter(item=>{
+          console.log(arguments);
+          return item.Title.toString().includes(val);
+        });
+      },
+      state8:function (val) {
 
-<style scoped>
+        if(val === ''){
+          return this.infoList = this.groupedInfoAryAry[this.currentPage - 1];
+        };
+        this.infoList = this.infoList.filter(item=>{
+          if(item.Status=='-1'){
+            this.schoolStatus='已逾期'
+          }else if(item.Status=='0'){
+            this.schoolStatus='已关闭'
+          }else if(item.Status=='1'){
+            this.schoolStatus='已指派'
+          }
+          return this.schoolStatus.toString().includes(val);
+        });
+      },
+      state9:function (val) {
+        if(val === ''){
+          return this.infoList = this.groupedInfoAryAry[this.currentPage - 1];
+        };
+
+        this.infoList = this.infoList.filter(item=>{
+          return item.name.toString().includes(val);
+        });
+      },
+      state10:function (val) {
+        if(val === ''){
+          return this.infoList = this.groupedInfoAryAry[this.currentPage - 1];
+        };
+        this.infoList = this.infoList.filter(item=>{
+          return item.email.toString().includes(val);
+        });
+      },
+    },
+    // beforeDestroy:function () {
+    //   clearInterval(this.timer)
+    // }
+  };
+</script>
+<style>
+  .el-table th{
+    color: #333;
+    background: rgb(216, 225, 229);
+  }
 </style>

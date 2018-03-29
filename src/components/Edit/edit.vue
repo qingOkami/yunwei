@@ -139,33 +139,35 @@
         this.$router.push('/')
       },
       handlenav() {
+        //显示隐藏调研人
         this.isNav = !this.isNav
       },
       handlenavss() {
         this.isNavs = !this.isNavs
       },
       handlePeople(row) {
+        //点击当前行的人
         this.dynamicTags.push(row.UserName);
         this.isNav = !this.isNav
         this.parmasid.responsiblePeople=this.dynamicTags;
       },
       handlePeople2(row) {
+        //点击当前行的人
         this.tables.push(row.UserName)
         this.isNavs = !this.isNavs
         console.log(this.tables);
         this.parmasid.participants=this.tables
       },
       handleClose2(tags) {
+        //关闭调研人标签
         this.tables.splice(this.tables.indexOf(tags), 1)
       },
       handleClose1(tag) {
         this.dynamicTags.splice(this.dynamicTags.indexOf(tag), 1)
         this.parmasid.responsiblePeople=this.dynamicTags;
       },
-      onSubmit() {
-        console.log('submit!');
-      },
       doPrint(){
+        //打印
         var newstr = document.getElementsByClassName('printOrder-data')[0].innerHTML
         //document.body.innerHTML = newstr
         // var oldstr = document.body.innerHTML
@@ -174,6 +176,7 @@
         //window.location.reload()
       },
       Preservation(){
+        //保存已经更改的数据
         let dataform=this.parmasid;
         this.parmasid.startDateTime=this.parmasid.startDateTime.replace(".0","")
         this.parmasid.endDateTime=this.parmasid.endDateTime.replace(".0","")
@@ -187,6 +190,7 @@
         })
       },
       getData(){
+        //获得路由传递过来的数据
         this.parmasid=this.$route.query.pramadata[0]
         console.log(this.parmasid,888);
         console.log(this.parmasid.imgSrc+""+this.parmasid.fileCode, 999);
@@ -194,6 +198,7 @@
       }
     },
     created(){
+      //调研人和参与人数据
       this.$axios.get('http://172.16.6.11:10080/GetUserList?token=D033EC9751E844B19E775D8309A922B8').then((res) => {
         this.tableData = res.data;
         this.tableDatas = res.data;
@@ -201,18 +206,21 @@
       }, error => {
         console.log(error);
       });
+      //学校数据
       this.$axios.get('http://172.16.6.11:10080/GetUnitList?token=D033EC9751E844B19E775D8309A922B8').then((res) => {
         this.schoolObjAry = res.data;
         console.log(res.data,989);
       }, error => {
         console.log(error);
       });
+      //单位数据
       this.$axios.get('http://172.16.6.11:10080/GetProjectInfo?token=D033EC9751E844B19E775D8309A922B8').then((res) => {
         this.jobNav=res.data
         console.log(res.data,28790);
       }, error => {
         console.log(error);
       });
+      //工程师数据
       this.$axios.get('http://172.16.6.11:10080/GetCompany?token=D033EC9751E844B19E775D8309A922B8').then((res) => {
         this.dydwname=res.data;
         console.log(res.data,28790);

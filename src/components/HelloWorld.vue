@@ -16,7 +16,6 @@
               v-model="state4"
               :fetch-suggestions="querySearchAsync"
               placeholder="搜索"
-              @select="handleSelect"
               style="width: 250px"
             ></el-autocomplete>
 
@@ -28,35 +27,36 @@
             >
               <el-form  label-width="120px">
                 <el-form-item  label="调研主题" style="display: inline-block">
-                  <el-input style="width: 150px" v-model="state7"></el-input>
+                  <el-input style="width: 150px" v-model="Pover.Title"></el-input>
                 </el-form-item>
                 <el-form-item label="学校名称" prop="region" style="display: inline-block;">
-                  <el-select filterable  v-model="state9" value-key="RecId" placeholder="请选择" style="width: 200px" >
+                  <el-select filterable  v-model="Pover.SchoolName" value-key="RecId" placeholder="请选择" style="width: 200px" >
                     <el-option v-for="(val,index) in schoolSeo" :label="val.SchoolName" :value="val.SchoolName" :key="index" >
                     </el-option>
                   </el-select>
                 </el-form-item>
                 <el-form-item  label="负责人" style="display: inline-block;">
-                  <el-input style="width: 200px" v-model="state5"></el-input>
+                  <el-input style="width: 200px" v-model="Pover.ResearchPeople"></el-input>
                   <!--<el-autocomplete v-model="state5" style="width: 200px"></el-autocomplete>-->
                 </el-form-item>
                 <el-form-item label="调研单位" prop="region" style="display: inline-block;">
-                  <el-select filterable  v-model="state10" value-key="RecId" placeholder="请选择" style="width: 150px" >
+                  <el-select filterable  v-model="Pover.ResearchOrganization" value-key="RecId" placeholder="请选择" style="width: 150px" >
                     <el-option v-for="(val,index) in dyname" :label="val.fdName" :value="val.fdName" :key="index" >
                     </el-option>
                   </el-select>
                 </el-form-item>
                 <el-form-item  label="学校负责人" style="display: inline-block;margin-left: 42px;">
-                  <el-input style="width: 200px" v-model="state6"></el-input>
+                  <el-input style="width: 200px" v-model="Pover.ResponsiblePeople"></el-input>
                 </el-form-item>
                 <el-form-item label="状态" prop="region" style="display: inline-block;margin-left: 35px">
-                  <el-select  v-model="state8" value-key="RecId" placeholder="请选择" style="width: 200px;" >
+                  <el-select  v-model="StatusList" value-key="RecId" placeholder="请选择" style="width: 200px;" >
                     <el-option label="已指派" value="已指派"></el-option>
                     <el-option label="已关闭" value="已关闭"></el-option>
                     <el-option label="已逾期" value="已逾期"></el-option>
                   </el-select>
                 </el-form-item>
                 <div style="text-align: center">
+                  <el-button @click="seoPover">搜索</el-button>
                 <el-button @click="popoverReset" style="color:rgb(133, 197, 246)">重置</el-button>
                 <el-button @click="visible2 = false">取消</el-button>
                 </div>
@@ -212,6 +212,7 @@
   export default {
     data() {
       return {
+        StatusList:'',
         visible2:false,
         schoolSeo:[],
         dyname:[],
@@ -246,12 +247,44 @@
         deleall:[],
         updata:[],
         dataStatus:'',
-        InfoListText:[]
+        Pover:{
+          SchoolName:'',
+          ResponsiblePeople:'',
+          ResearchOrganization:'',
+          ResearchPeople:'',
+          Status:'',
+          Title:''
+        },
+        seoList:[]
       };
     },
     methods: {
+      seoPover(){
+        //多条件远程搜索
+        if(this.StatusList=='已逾期'){
+          this.Pover.Status='-1'
+        }else if(this.StatusList=='已关闭'){
+          this.Pover.Status='0'
+        }else if(this.StatusList=='已指派'){
+          this.Pover.Status='1'
+        }
+        let povers=JSON.stringify(this.Pover);
+        this.$axios.post("http://172.16.6.11:10080/QueryResearchInfo?",povers).then((res) => {
+         console.log(res.data,2323888);
+          this.seoList=res.data
+          this.infoList=this.seoList
+        }, error => {
+          console.log(error);
+        })
+      },
+      testFont(val){
+        //匹配汉字正则可以删除，本条之前的前端本页面搜索用的
+       var result = (new RegExp(/^[\u4E00-\u9FA5]{1,5}$/)).test(val)
+        console.log(result,87252);
+        return result
+      },
       handleClose(index,row){
-
+//关闭当前状态
         let stascode=JSON.stringify(row.FileCode)
         let stastus=JSON.stringify(row.Status=0)
         console.log(stastus,5454);
@@ -262,6 +295,7 @@
         });
       },
       handleUpdata(index,row){
+        //指派
         this.updata =row;
         let clr=JSON.stringify(this.updata);
         console.log(row.FileCode,57832);
@@ -275,19 +309,22 @@
         });
       },
       popoverReset(){
-        this.state4 = '';
-        this.state5='';
-        this.state6='';
-        this.state7='';
-        this.state8='';
-        this.state9='';
-        this.state10='';
+        //多条件重置
+        this.Pover.SchoolName='';
+        this.Pover.ResponsiblePeople='';
+        this.Pover.ResearchOrganization='';
+        this.Pover.ResearchPeople='';
+        this.Pover.Status='';
+        this.StatusList='';
+        this.Pover.Title='';
+        this.infoList = this.newArr[0];
       },
       winReload(){
        window.location.reload();
 
       },
       handleDeleteAll(){
+        //删除多选
         this.Deleterow=this.multipleSelection;
         let DAll=this.Deleterow
         for(var as in this.Deleterow){
@@ -306,7 +343,8 @@
         });
       },
       handleDelete(index, row) {
-        this.$confirm('确认关闭？')
+        //删除
+        this.$confirm('确认删除？')
           .then(_ => {
             this.infoList.splice(index, 1);
             this.Deleterow.push(row)
@@ -327,6 +365,7 @@
 
       },
       querySearchAsync(queryString, cb) {
+        //模糊搜索的便利
         var restaurants = this.restaurants;
         var results = queryString ? restaurants.filter(this.createStateFilter(queryString)) : restaurants;
         clearTimeout(this.timeout);
@@ -339,13 +378,12 @@
           return (state.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
         };
       },
-      handleSelect(item) {
-        console.log(item);
-      },
       handleSelectionChange(val,index) {
+        //数据实时更改
         this.multipleSelection = val;
       },
       handleDeteilsSur(ers) {
+        //详情页
         console.log(ers,2222);
         //var oba = JSON.stringify(ers);
         this.$axios.get('http://172.16.6.11:10080/GetResearchInfo?FileCode='+ers,
@@ -366,6 +404,7 @@
         console.log(this.infoList, 195, 195);
       },
       handleCurrentChange(currentPage) {
+        //数据改变当前的分页数量改变
         this.currentPage = currentPage;
         this.infoList = this.groupedInfoAryAry[currentPage - 1];
         this.state4 = '';
@@ -377,7 +416,7 @@
         this.state10='';
       },
       filterInfo() {
-
+//分页
         this.newArr = [];
         let tmpArr = [];
         this.willFilterInfoList.forEach((item, index) => {
@@ -393,6 +432,7 @@
       }
     },
     created() {
+      //当前的数据列表API
       this.$axios.get('http://172.16.6.11:10080/GetResearchIndex?token=D033EC9751E844B19E775D8309A922B8').then((res) => {
         this.willFilterInfoList = res.data;
         console.log(this.willFilterInfoList,89213);
@@ -401,12 +441,14 @@
       }, error => {
         console.log(error);
       });
+      //调研单位的数据
       this.$axios.get('http://172.16.6.11:10080/GetCompany?token=D033EC9751E844B19E775D8309A922B8').then((res) => {
         this.dyname=res.data;
         console.log(res.data,28790);
       }, error => {
         console.log(error);
       });
+      //学校名称的数据
       this.$axios.get('http://172.16.6.11:10080/GetUnitList?token=A2D4B1BD5BCD43E4BFFAD9C8BE76743C').then((res) => {
         this.schoolSeo = res.data;
         console.log(this.schoolSeo,123);
@@ -415,12 +457,13 @@
       });
     },
     watch: {
+      //模糊搜索下面的state5~10可以忽略，已更改为远程搜索
       state4: function (val) {
         if(val === ''){
           return this.infoList = this.groupedInfoAryAry[this.currentPage - 1];
         };
         this.infoList = this.willFilterInfoList.filter(item=>{
-          console.log(val,9898);
+          console.log(item.FileCode,9898);
           // return item.ResearchOrganization.toString().includes(val);
           if(item.ResearchOrganization.toString().includes(val)) return true;
           if(item.FileCode.toString().includes(val)) return true;
@@ -434,66 +477,152 @@
         if(val === ''){
           return this.infoList = this.groupedInfoAryAry[this.currentPage - 1];
         };
-        this.infoList = this.willFilterInfoList.filter(item=>{
-          console.log(val,8888);
-          return item.ResponsiblePeople.toString().includes(val);
-        });
+        // this.infoList = this.willFilterInfoList.filter(item=>{
+        //   console.log(val,8888);
+        //   return item.ResponsiblePeople.toString().includes(val);
+        // });
+        let listNew = [];
+        for (let i = 0;i<this.infoList.length;i++){
+          if(this.testFont(val)){
+            if(this.infoList[i].ResponsiblePeople.indexOf(val) > -1){
+              listNew.push(this.infoList[i]);
+            }
+          }
+        }
+        console.log(listNew);
+        if(listNew.length > 0){
+          this.infoList = listNew;
+          listNew = [];
+        }
       },
       state6:function (val) {
         if(val === ''){
           return this.infoList = this.groupedInfoAryAry[this.currentPage - 1];
         };
-        this.infoList = this.willFilterInfoList.filter(item=>{
-          console.log(arguments);
-          return item.ResearchPeople.toString().includes(val);
-        });
+        // this.infoList = this.willFilterInfoList.filter(item=>{
+        //   console.log(arguments);
+        //   return item.ResearchPeople.toString().includes(val);
+        // });
+        let listNew = [];
+        for (let i = 0;i<this.infoList.length;i++){
+          if(this.testFont(val)){
+            if(this.infoList[i].ResearchPeople.indexOf(val) > -1){
+              listNew.push(this.infoList[i]);
+            }
+          }
+        }
+        console.log(listNew);
+        if(listNew.length > 0){
+          this.infoList = listNew;
+          listNew = [];
+        }
+
       },
       state7:function (val) {
         if(val === ''){
           return this.infoList = this.groupedInfoAryAry[this.currentPage - 1];
         };
-        this.infoList = this.willFilterInfoList.filter(item=>{
-          console.log(arguments);
-          return item.Title.toString().includes(val);
-        });
+        /*this.infoList = this.infoList.filter(item=>{
+          //console.log(typeof this.willFilterInfoList,292929);
+          console.log(val,77777);
+          console.log(item,22222);
+          var flgs=true;
+          // return item.Title.toString().includes(val);
+          if(item.Title.toString().includes(val)){
+            console.log(val,1144);
+            flgs=false;
+            if(flgs){
+              return this.infoList;
+            }
+
+           // return item.Title;
+          }else {
+            console.log(val,2323);
+            flgs=true;
+            return item.Title;
+           // return this.infoList;
+          }
+        });*/
+        let listNew = [];
+        for (let i = 0;i<this.infoList.length;i++){
+          console.log(this.infoList[i].Title);
+          console.log(this.infoList[i].Title.indexOf(this.testFont(val)),2323111);
+          if(this.testFont(val)){
+
+          if(this.infoList[i].Title.indexOf(val) > -1){
+            console.log("11111111");
+            listNew.push(this.infoList[i]);
+          }
+          }
+        }
+        console.log(listNew);
+        if(listNew.length > 0){
+          this.infoList = listNew;
+          listNew = [];
+        }
+
       },
       state8:function (val) {
 
         if(val === ''){
           return this.infoList = this.groupedInfoAryAry[this.currentPage - 1];
         };
-        this.infoList = this.infoList.filter(item=>{
+        // this.infoList = this.infoList.filter(item=>{
+        //   if(item.Status=='-1'){
+        //     this.schoolStatus='已逾期'
+        //   }else if(item.Status=='0'){
+        //     this.schoolStatus='已关闭'
+        //   }else if(item.Status=='1'){
+        //     this.schoolStatus='已指派'
+        //   }
+        //   return this.schoolStatus.toString().includes(val);
+        // });
+        let listNew = [];
+        let oldlist = this.willFilterInfoList;
+        oldlist.forEach((item,index)=>{
           if(item.Status=='-1'){
-            this.schoolStatus='已逾期'
-          }else if(item.Status=='0'){
-            this.schoolStatus='已关闭'
-          }else if(item.Status=='1'){
-            this.schoolStatus='已指派'
+                this.schoolStatus='已逾期'
+               }else if(item.Status=='0'){
+                 this.schoolStatus='已关闭'
+               }else if(item.Status=='1'){
+                 this.schoolStatus='已指派'
+               }
+          if(this.schoolStatus == val){
+            listNew.push(item);
           }
-          return this.schoolStatus.toString().includes(val);
         });
+        this.infoList = listNew;
       },
       state9:function (val) {
         if(val === ''){
           return this.infoList = this.groupedInfoAryAry[this.currentPage - 1];
         };
-
-        this.infoList = this.infoList.filter(item=>{
-            return item.SchoolName.toString().includes(val);
+        let listNew = [];
+        let oldlist = this.willFilterInfoList;
+        oldlist.forEach((item,index)=>{
+          if(item.SchoolName.toString() == val){
+            listNew.push(item);
+          }
         });
+        this.infoList = listNew;
       },
       state10:function (val) {
         if(val === ''){
           return this.infoList = this.groupedInfoAryAry[this.currentPage - 1];
         };
-        this.infoList = this.infoList.filter(item=>{
-          return item.ResearchOrganization.toString().includes(val);
+        // this.infoList = this.infoList.filter(item=>{
+        //   return item.ResearchOrganization.toString().includes(val);
+        // });
+        let listNew = [];
+        let oldlist = this.willFilterInfoList;
+        oldlist.forEach((item,index)=>{
+          if(item.ResearchOrganization.toString() == val){
+            listNew.push(item);
+          }
         });
+        this.infoList = listNew;
       },
     },
-    // beforeDestroy:function () {
-    //   clearInterval(this.timer)
-    // }
   };
 </script>
 <style>

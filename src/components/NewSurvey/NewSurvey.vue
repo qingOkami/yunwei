@@ -93,6 +93,7 @@
           <el-form v-for="(selectedSchoolObj, index) in selectedSchoolObjAry" style="margin-left: 70px" :key="index">
             <template slot-scope="scope">
               <el-form-item label="学校名称" class="DataInline">
+                <span>{{index+1}}</span>
                 <el-select filterable  @change="selectSchool(selectedSchoolObj.SchoolName, index)" v-model="selectedSchoolObj.SchoolName"
                            value-key="UnitId"
                            placeholder="请选择学校" class="DataOption">
@@ -234,16 +235,20 @@
     },
     methods: {
       dialogVisibles(){
+        //预览
         this.dialogVisible=true;
         console.log(this.selectedSchoolObjAry,555);
       },
       deleteRow(index){
+        //删除本行的学校和学校负责人
         this.selectedSchoolObjAry.splice(index,1)
       },
       creactSchool() {
+        //创建学校
         this.selectedSchoolObjAry.push({...this.defaultSchoolObj});
       },
       selectSchool(theOneId, selectedSchoolObjAryIndex) {
+        //学校和学校负责人的绑定
         const [selectedSchoolFormApiObj] = this.schoolObjAry.filter(item => {
           return item.SchoolName == theOneId;
         });
@@ -255,6 +260,7 @@
         }
       },
       logTimeChange(date){
+        //展示再打印页面的时间格式
         var y = date.getFullYear();
         var m = date.getMonth() + 1;
         m = m < 10 ? '0' + m : m;
@@ -271,30 +277,37 @@
         this.scdate= y + '年' + m + '月' + d+'日';
       },
       handlenav() {
+        //显示选择调研人
         this.isNav = !this.isNav
       },
       handlenavss() {
+        //显示选择参与人
         this.isNavs = !this.isNavs
       },
       handlePeople(row) {
+        //选中当前的调研人
         this.dynamicTags.push(row.UserName);
         this.isNav = !this.isNav
         this.school.ResponsiblePeople=this.dynamicTags;
       },
       handlePeople2(row) {
+        //选中当前的参与人
         this.tables.push(row.UserName)
         this.isNavs = !this.isNavs
         console.log(this.tables);
         this.school.Participants=this.tables
       },
       handleClose1(tag) {
+        //关闭选中的调研人标签
         this.dynamicTags.splice(this.dynamicTags.indexOf(tag), 1)
         this.school.ResponsiblePeople=this.dynamicTags;
       },
       handleClose2(tags) {
+        //关闭选中的参与人标签
         this.tables.splice(this.tables.indexOf(tags), 1)
       },
       postData() {
+        //推送给后台新建的内容
         this.school.SchoolName = this.selectedSchoolObjAry.map(item=>item.SchoolName);
         console.log(this.selectedSchoolObjAry.map(item => item));
         console.log(this.selectedSchoolObjAry.map(item => item.Teacher));
@@ -319,12 +332,15 @@
           })
       },
       resetForm(formName) {
+        //返回
         this.$router.go(-1)
       },
       showToggle: function () {
+
         this.isShow = !this.isShow
       },
       handleClose(done) {
+        //关闭预览
         this.$confirm('确认关闭？')
           .then(_ => {
             done();
@@ -335,6 +351,7 @@
 
     },
     mounted() {
+      //调研参与人和调研人数据
       this.$axios.get('http://172.16.6.11:10080/GetUserList?token=A2D4B1BD5BCD43E4BFFAD9C8BE76743C').then((res) => {
         this.tableData = res.data;
         this.tableDatas = res.data;
@@ -344,17 +361,20 @@
       }, error => {
         console.log(error);
       });
+      //学校的接口
       this.$axios.get('http://172.16.6.11:10080/GetUnitList?token=A2D4B1BD5BCD43E4BFFAD9C8BE76743C').then((res) => {
         this.schoolObjAry = res.data;
         console.log(this.schoolObjAry,123);
       }, error => {
         console.log(error);
       });
+      //工作单位的接口
       this.$axios.get('http://172.16.6.11:10080/GetProjectInfo?token=A2D4B1BD5BCD43E4BFFAD9C8BE76743C').then((res) => {
         this.jobNav=res.data
       }, error => {
         console.log(error);
       });
+      //工程师的名字
       this.$axios.get('http://172.16.6.11:10080/GetCompany?token=D033EC9751E844B19E775D8309A922B8').then((res) => {
         this.FDname=res.data;
         console.log(res.data,28790);

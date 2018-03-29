@@ -54,6 +54,7 @@ dates:'',
         },
       methods:{
         logTimeChange(date) {
+          //打印页的时间格式
           var y = date.getFullYear();
           var m = date.getMonth() + 1;
           m = m < 10 ? '0' + m : m;
@@ -68,12 +69,14 @@ dates:'',
         },
       },
       components:{
+          //此方式是因为无法直接向vue某些特定结构传值，只能通过child的方式传递数据
         child: {
           props: ['myMessage'],
           template: '<span>{{myMessage}}</span>'
         }
       },
       mounted:function () {
+          //二维码的路径
         this.PrintNav=this.$route.query.Prints
         this.PrintNav.startDateTime=this.PrintNav.startDateTime.replace(".0","")
         this.PrintNav.endDateTime=this.PrintNav.endDateTime.replace(".0","")

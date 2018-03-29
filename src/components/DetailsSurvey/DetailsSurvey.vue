@@ -81,10 +81,8 @@
       handleGo(){
         this.$router.push('/')
       },
-      onSubmit() {
-        console.log('submit!');
-      },
       inv: function () {
+        //inv和ins分别是为了隐藏按钮设定的延迟操作
         this.invt = setTimeout(() => {
           window.print()
         }, 100)
@@ -95,6 +93,7 @@
         }, 300)
       },
       doPrint(){
+        //打印
         let Printobj=this.parmasid
         this.$router.push({path:'/PrintWork',query: {Prints:Printobj}})
         this.isShow=false;
@@ -108,11 +107,13 @@
         //window.location.reload()
       },
       getData(){
+        //获取路由从上一个页面传递的数据
         this.parmasid=this.$route.query.pramadata[0]
         console.log(this.parmasid,707);
       }
     },
     mounted:function () {
+      //拿到二维码的动态路径
       this.getData()
       let imageS="http://qr.liantu.com/api.php?text="+this.parmasid.serverIP+"/iitsp/research.jsp?fileCode="
       this.imgSrc=imageS+this.parmasid.fileCode
